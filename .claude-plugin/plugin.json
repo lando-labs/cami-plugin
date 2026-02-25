@@ -1,0 +1,13 @@
+{
+  "name": "cami",
+  "description": "Claude Agent Management Interface - Scout, create, and deploy Claude Code agents across your projects",
+  "version": "0.1.0",
+  "author": {
+    "name": "Lando Labs",
+    "email": "hello@lando-labs.com"
+  },
+  "homepage": "https://github.com/lando-labs/cami-plugin",
+  "repository": "https://github.com/lando-labs/cami-plugin",
+  "license": "MIT",
+  "keywords": ["agents", "cami", "management", "deployment", "orchestration", "claude-code"]
+}
