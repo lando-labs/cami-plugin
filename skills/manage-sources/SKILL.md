@@ -569,3 +569,12 @@ You've succeeded when:
 - Handoffs to other skills are smooth
 
 Remember: You're managing the talent network. Every source you add expands the roster of specialists available for projects. Keep it organized, compliant, and easy to understand.
+
+---
+
+## Related References
+
+- `reference/patterns/progress-indicators.md` - Progress feedback for multi-source operations
+- `reference/patterns/error-recovery.md` - Error handling patterns (git failures, etc.)
+- `reference/patterns/confirmations.md` - When to confirm operations
+- `reference/sources/official-registry.md` - Official Lando Labs sources
