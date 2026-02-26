@@ -14,6 +14,24 @@ Read and embody: `reference/voice/scout-persona.md`
 
 Apply: `reference/voice/location-protocol.md`
 
+## Workspace Path Resolution
+
+**ALWAYS resolve workspace path before any operation.**
+
+```bash
+# Check for custom workspace path
+echo $CAMI_WORKSPACE_PATH
+```
+
+- If set and non-empty: use that path
+- If empty/unset: use default `~/cami-workspace`
+
+**All paths in this skill should use the resolved workspace path:**
+- Config: `$WORKSPACE/config.yaml` (NOT config.yaml)
+- Sources: `$WORKSPACE/sources/`
+
+See `reference/config-schema.md` for full schema documentation.
+
 ---
 
 ## Purpose
@@ -122,19 +140,18 @@ Your workspace is at ~/cami-workspace/ - want me to show you what's there?"
    - Verify required frontmatter fields
    - Report any issues found
 
-5. **Update config.json**
-   - Read `~/cami-workspace/config.json`
-   - Add source entry:
-   ```json
-   {
-     "name": "source-name",
-     "path": "./sources/source-name",
-     "priority": 50,
-     "git": {
-       "enabled": true,
-       "url": "https://github.com/org/repo.git"
-     }
-   }
+5. **Update config.yaml**
+   - Resolve workspace path (check `$CAMI_WORKSPACE_PATH` first)
+   - Read `$WORKSPACE/config.yaml`
+   - Add source entry to `agent_sources`:
+   ```yaml
+   - name: source-name
+     type: local
+     path: /absolute/path/to/workspace/sources/source-name
+     priority: 50
+     git:
+       enabled: true
+       url: https://github.com/org/repo.git
    ```
    - Write updated config
 
@@ -163,7 +180,7 @@ Your workspace is at ~/cami-workspace/ - want me to show you what's there?"
 **Triggers**: "update sources", "update my sources", "pull latest agents"
 
 **Process**:
-1. **Read config.json**
+1. **Read config.yaml**
    - Find all sources with `git.enabled: true`
    - If none: "No git sources configured. Want to add one?"
 
@@ -200,7 +217,7 @@ Your workspace is at ~/cami-workspace/ - want me to show you what's there?"
 **Triggers**: "list sources", "show my sources", "what sources do I have"
 
 **Process**:
-1. **Read config.json**
+1. **Read config.yaml**
    - Get all configured sources
    - If empty: "No sources yet. Want to add one?"
 
@@ -328,10 +345,10 @@ Sources are compliant when their agents and skills have proper frontmatter and f
 
 **Triggers**: "reconcile sources", "sync sources", "check source config"
 
-**Purpose**: Compare config.json with actual filesystem state.
+**Purpose**: Compare config.yaml with actual filesystem state.
 
 **Process**:
-1. **Read config.json**
+1. **Read config.yaml**
    - Get list of configured sources
 
 2. **Scan filesystem**
@@ -439,15 +456,34 @@ Want me to create it at ~/cami-workspace/?"
 
 If yes: create workspace, then proceed with source management.
 
-### Config.json Corrupted
-If config.json is invalid JSON:
+### Config.yaml Corrupted
+If config.yaml is invalid YAML:
 ```
-"Your config.json seems corrupted. I can:
+"Your config.yaml seems corrupted. I can:
 1. Create a fresh config (you'll need to re-add sources)
 2. Show you the error so you can fix it manually
 
 What would you prefer?"
 ```
+
+### Old Config Format Detected
+If you encounter `config.json` or old field names (`sources` instead of `agent_sources`):
+```
+"I found an old config format. Let me migrate it to the current format."
+
+Migration steps:
+1. Read old config (JSON or YAML)
+2. Map field names:
+   - sources → agent_sources
+   - deployments → deploy_locations
+3. Convert JSON to YAML if needed
+4. Write config.yaml
+5. Backup old file
+
+"Done! Your config has been migrated to the current format."
+```
+
+See `reference/config-schema.md` for migration details.
 
 ---
 
