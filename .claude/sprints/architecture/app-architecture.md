@@ -1,111 +1,95 @@
-# CAMI Plugin - Application Architecture
+# CAMI Plugin - App Architecture
 
-> Created: 2026-02-25
-> Last Updated: 2026-02-25
+> Created: 2026-02-26
+> Last Updated: 2026-02-26
 
 ## Overview
 
-CAMI (Claude Agent Management Interface) is a skills-only Claude Code plugin that helps users discover, manage, and deploy AI agents to their projects.
-
-## Core Concept: Capabilities
-
-The plugin treats both agents and skills as "capabilities":
-- **Agents** = Methodology experts (judgment, decisions, quality standards)
-- **Skills** = Implementation patterns (workflows, syntax)
+CAMI (Claude Agent Management Interface) is a Claude Code plugin that provides agent management capabilities through a skill-based architecture. It enables users to scout, create, and deploy agents across projects.
 
 ## Feature Areas
 
-### 1. Scout Persona (CLAUDE.md)
-The main entry point that establishes CAMI's identity and routes to skills.
-- **Files**: `CLAUDE.md`
-- **Purpose**: Guide users to build the right foundation for their projects
-- **Voice**: Elite agent scout and orchestrator
+| Area | Description | Key Files |
+|------|-------------|-----------|
+| **Entry Point** | Main CAMI skill, persona, routing | `skills/cami/` |
+| **Capabilities** | Deploy, scan, import agents/skills | `skills/manage-capabilities/` |
+| **Sources** | Add, update, reconcile agent sources | `skills/manage-sources/` |
+| **Agent Creation** | Two-class agent system, roster building | `skills/create-agent/` |
+| **Project Setup** | Initialize projects with capabilities | `skills/create-project/` |
 
-### 2. Capability Management (manage-capabilities)
-List, deploy, scan, and update agents and skills.
-- **Files**: `skills/manage-capabilities/SKILL.md`, `references/`
-- **Operations**: list, deploy, scan, update, remove
-- **Scope**: Both agents and skills uniformly
-
-### 3. Source Management (manage-sources)
-Add, update, and manage capability sources (guilds).
-- **Files**: `skills/manage-sources/SKILL.md`, `references/`
-- **Operations**: add, update, list, reconcile, check compliance
-
-### 4. Agent Creation (create-agent)
-Guide users through agent creation using agent-architect.
-- **Files**: `skills/create-agent/SKILL.md`, `references/`
-- **Dependencies**: Invokes `agent-architect` agent
-- **Decision**: Agent vs skill guidance
-
-### 5. Project Setup (create-project)
-Set up new projects with recommended agent teams.
-- **Files**: `skills/create-project/SKILL.md`, `references/`
-- **Operations**: Initialize project, recommend teams, deploy starters
-
-### 6. Architects (External Agents)
-- **agent-architect**: Creates methodology-focused agents (v5.0.0)
-- **skill-architect**: Creates implementation skills (v2.0.0)
-
-## Skill Routing
+## Skills Architecture
 
 ```
-User Input
-    │
-    ▼
-CLAUDE.md (Scout Persona)
-    │
-    ├─ "list agents" ──────────► manage-capabilities
-    ├─ "deploy X" ─────────────► manage-capabilities
-    ├─ "add source" ───────────► manage-sources
-    ├─ "create agent" ─────────► create-agent ──► agent-architect
-    ├─ "new project" ──────────► create-project
-    └─ "update agents" ────────► manage-capabilities + manage-sources
+skills/
+├── cami/                   # Entry point - persona + location routing
+│   └── SKILL.md
+├── manage-capabilities/    # Deploy, scan, import agents/skills
+│   └── SKILL.md
+├── manage-sources/         # Add, update, reconcile sources
+│   └── SKILL.md
+├── create-agent/           # Two-class agent creation
+│   ├── SKILL.md
+│   └── triggers/
+└── create-project/         # Project initialization
+    ├── SKILL.md
+    └── triggers/
 ```
 
-## Plugin Structure
+## Agents
 
 ```
-cami-plugin/
-├── plugin.json              # Plugin manifest
-├── CLAUDE.md                # Scout persona + skill routing
-├── README.md                # User documentation
-├── templates/
-│   └── config.yaml          # Workspace config template
-├── skills/
-│   ├── manage-capabilities/
-│   │   ├── SKILL.md
-│   │   └── references/
-│   ├── manage-sources/
-│   │   ├── SKILL.md
-│   │   └── references/
-│   ├── create-agent/
-│   │   ├── SKILL.md
-│   │   └── references/
-│   └── create-project/
-│       ├── SKILL.md
-│       └── references/
-└── agents/
-    ├── agent-architect.md   # v5.0.0
-    └── skill-architect.md   # v2.0.0
+agents/
+├── agent-architect.md      # Creates methodology-specialist/strategic-planner agents
+└── skill-architect.md      # Creates workflow skills
 ```
 
-## Workspace Model
-
-Users maintain a workspace at `~/cami-workspace/`:
+## Reference Documentation
 
 ```
-~/cami-workspace/
-├── config.yaml              # Sources and settings
-├── sources/                 # Cloned capability sources
-│   ├── fullstack-guild/
-│   ├── game-dev-guild/
-│   └── my-agents/
-└── projects.yaml            # (optional) Project registry
+reference/
+├── config-schema.md        # Configuration format documentation
+├── tech-detection.md       # Tech stack auto-detection
+├── voice/
+│   ├── scout-persona.md    # CAMI's scout voice
+│   └── location-protocol.md # Location detection
+├── ux/
+│   └── skill-architecture-spec.md
+├── patterns/               # Common patterns
+└── sources/                # Source management patterns
 ```
+
+## Core Concepts
+
+### Capabilities
+Both agents and skills are "capabilities":
+- **Agents**: Methodology experts (judgment, decisions, quality standards)
+- **Skills**: Implementation patterns (workflows, syntax, checklists)
+
+### Two-Class Agent System
+- **methodology-specialist**: Domain expertise + skill pairing
+- **strategic-planner**: Architecture, research, decisions
+
+### Location Modes
+- **Workspace mode**: In ~/cami-workspace/ → source operations
+- **Project mode**: In project with .claude/ → capability operations
+- **Initialization mode**: In project without .claude/ → setup
+- **Navigation mode**: Unclear location → guide user
+
+## Configuration Files
+
+| File | Location | Purpose |
+|------|----------|---------|
+| `config.yaml` | `~/cami-workspace/` | Workspace configuration |
+| `deployments.yaml` | `~/cami-workspace/` | Deployment tracking |
+| `cami-manifest.yaml` | Project `.claude/` | Project capability manifest |
+
+## Dependencies
+
+- Claude Code plugin system
+- User's CAMI workspace (`~/cami-workspace/` or `$CAMI_WORKSPACE_PATH`)
 
 ## Update Log
 
 | Date | Sprint | Changes |
 |------|--------|---------|
-| 2026-02-25 | Initial | Created architecture document |
+| 2026-02-26 | Initial | Created architecture document |
