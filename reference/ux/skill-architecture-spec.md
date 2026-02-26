@@ -120,12 +120,12 @@ LOCATION DETECTION (run on every cami invocation):
 User: "hey cami"
 
 CAMI: "You're in your CAMI workspace - your agent command center.
-From here you can manage your capability sources or create new agents.
+From here you can create new agents or manage your capability sources.
 
 What would you like to do?
-- Review your sources (show what guilds you have)
-- Add a new source (official guilds or custom repos)
 - Create a new agent (save to your sources)
+- Review your sources (show what you have)
+- Add a new source (official or custom repos)
 - Check on your projects (see what's deployed where)"
 ```
 
@@ -138,10 +138,10 @@ CAMI: "You're in [project-name]. I see you have [N] capabilities deployed:
 - Skills: react-tailwind
 
 What would you like to do?
-- See what's available (browse your sources)
-- Deploy more capabilities (add agents or skills)
+- Create something custom (new agent for this project)
+- Deploy more capabilities (from your sources)
 - Check for updates (scan what's deployed)
-- Create something custom (new agent for this project)"
+- See what's available (browse your sources)"
 ```
 
 **Initialization Mode Entry:**
@@ -152,7 +152,8 @@ CAMI: "I see this is a [React/Next.js] project - found package.json with React 1
 
 It doesn't have CAMI set up yet. Would you like me to:
 1. Set up CAMI and recommend agents for this stack
-2. Just browse - I want to explore first"
+2. Create a custom agent for this project first
+3. Browse available sources - I want to explore first"
 ```
 
 **Navigation Mode Entry:**
@@ -160,8 +161,8 @@ It doesn't have CAMI set up yet. Would you like me to:
 User: "hey cami"
 
 CAMI: "I'm not sure where you'd like to work. Would you like to:
-1. Go to your CAMI workspace (manage sources and global config)
-2. Work on a specific project (tell me which one)
+1. Work on a specific project (tell me which one)
+2. Go to your CAMI workspace (manage sources and global config)
 3. Find your Claude Code projects (I'll scan for them)"
 ```
 
@@ -442,19 +443,19 @@ purpose: Add, update, list, and reconcile capability sources
 
 triggers:
   primary:
-    - "add source" / "add [guild-name]"
-    - "add the fullstack-guild" / "add fullstack guild"
+    - "add source" / "add [source-name]"
+    - "add the [source-name]"
     - "update sources" / "pull sources"
-    - "list sources" / "show my guilds"
+    - "list sources" / "show my sources"
     - "reconcile sources" / "fix source config"
 
   contextual:
-    - When user mentions a guild name they don't have
+    - When user mentions a source name they don't have
     - When deployment fails due to missing source
 
 operations:
   add:
-    official_guild: Clone from known URL (fullstack-guild, game-dev-guild, content-guild)
+    registry_source: Look up in registry, clone from known URL
     git_url: Clone any git repository
     local_path: Register existing directory
 
@@ -479,10 +480,10 @@ handoffs:
     transition: "Nice - want to create a custom agent in this source?"
 
 voice_notes:
-  - Use "guild" for official Lando Labs sources
-  - Use "source" for any capability repository
+  - Use "source" for any capability repository (official or custom)
   - "Your sources" = their configured capability libraries
   - Treat sources like "farm teams" - where you scout for talent
+  - Repository names may include "-guild" but in conversation use "source"
 ```
 
 ### create-agent
@@ -591,15 +592,14 @@ workflow:
     - Suggest how to use the agents
 
 handoffs:
-  to_manage_sources:
-    condition: Recommended agents require sources not configured
-    transition: "To get those agents, you'll need to add the fullstack-guild.
-                Let me help with that first."
-
   to_create_agent:
     condition: User needs custom agent not in any source
     transition: "I don't have a specialist for that in my sources.
-                Want to create a custom agent?"
+                Want me to help you create one?"
+
+  to_manage_sources:
+    condition: User wants to browse sources after creation discussion
+    transition: "Or if you'd like, I can show you what's available in sources."
 
 voice_notes:
   - "Building your starting roster" not "Installing agents"
@@ -709,10 +709,9 @@ keep track of your agent sources and configurations.
 
 [Creates ~/cami-workspace/ with config.yaml]
 
-Done! Now let's get some agents. Would you like to:
-1. Add an official guild (collections of pre-built agents)
-2. Create your first custom agent
-3. Just explore what's available"
+Done! Now, what are you working on? Tell me about your project and I can:
+1. Help you create a custom agent for it
+2. Recommend pre-built agents from available sources"
 ```
 
 **Experienced User (has workspace, has agents):**
@@ -785,9 +784,8 @@ Options:
 CAMI: "I don't see 'database-methodology' in your sources.
 
 You can:
-1. Add a guild that has it (fullstack-guild includes database specialists)
-2. Create a custom database agent
-3. Search other guilds for similar agents"
+1. Create a custom database agent (I'll help you design it)
+2. Browse available sources for pre-built options"
 ```
 
 **No Workspace:**
@@ -844,8 +842,9 @@ User: "y"
 
 CAMI: "Done! Created your workspace at ~/cami-workspace/
 
-Next step: Add some agent sources. The fullstack-guild has great specialists
-for web development. Want me to add it?"
+What would you like to do first?
+1. Create a custom agent for your project (I'll help you design it)
+2. Browse available sources (pre-built agent collections)"
 ```
 
 ### No Sources
@@ -856,15 +855,12 @@ for web development. Want me to add it?"
 ```
 User: "list agents"
 
-CAMI: "Your sources are empty - no agents to show yet.
+CAMI: "No agents yet. Want to create one for your project, or browse pre-built sources?
 
-Let's fix that. Choose a starting point:
+1. Create a custom agent (I'll help you design it)
+2. Add a source (pre-built agent collections)
 
-1. fullstack-guild - Web development (React, Node, databases)
-2. game-dev-guild - Game development (Phaser, game design)
-3. content-guild - Writing and marketing
-
-Or give me a git URL to add a custom source."
+Tell me about your project and I'll guide you."
 ```
 
 ### No Deployed Agents (in a project)
@@ -878,12 +874,10 @@ User: "hey cami"
 CAMI: "You're in my-app, but I don't see any agents deployed yet.
 
 I detected React 19 and Node.js from your project files.
-For this stack, I'd recommend starting with:
 
-- frontend-methodology (UI architecture decisions)
-- backend-methodology (API design patterns)
-
-Want me to deploy these? Or show me what else is available?"
+What would you like to do?
+1. Create a custom agent for this project (I'll help you design it)
+2. See recommended agents for this stack (from available sources)"
 ```
 
 ---

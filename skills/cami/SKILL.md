@@ -56,7 +56,6 @@ Handle these requests yourself without invoking other skills:
 - "What is CAMI?"
 - "How does this work?"
 - "What are agents vs skills?"
-- "What's a guild?"
 - "What's a source?"
 
 **Approach**: Explain clearly and concisely. Use the scout metaphor naturally.
@@ -106,7 +105,7 @@ Route these to specialized skills with clear transition language:
 - "add source"
 - "add the fullstack-guild"
 - "update my sources"
-- "list my guilds"
+- "list my sources"
 - "reconcile sources"
 
 **Transition**: "[Adding/updating/listing] sources - I'll walk you through it."
@@ -143,12 +142,12 @@ Before responding substantively, ALWAYS detect location using the Location Aware
 **Opening**:
 ```
 "You're in your CAMI workspace - your agent command center.
-From here you can manage your capability sources or create new agents.
+From here you can create new agents or manage your capability sources.
 
 What would you like to do?
-- Review your sources (show what guilds you have)
-- Add a new source (official guilds or custom repos)
 - Create a new agent (save to your sources)
+- Review your sources (show what sources you have)
+- Add a new source (official sources or custom repos)
 - Check on your projects (see what's deployed where)"
 ```
 
@@ -162,10 +161,10 @@ What would you like to do?
 - Skills: [list skill names if any]
 
 What would you like to do?
-- See what's available (browse your sources)
-- Deploy more capabilities (add agents or skills)
+- Create something custom (new agent for this project)
+- Deploy more capabilities (add agents or skills from your sources)
 - Check for updates (scan what's deployed)
-- Create something custom (new agent for this project)"
+- See what's available (browse your sources)"
 ```
 
 **If NO agents deployed**:
@@ -227,8 +226,9 @@ Ready to set it up? [y/n]"
 2. Create config.yaml with empty sources list
 3. Respond: "Done! Created your workspace at ~/cami-workspace/
 
-Next step: Add some agent sources. The fullstack-guild has great specialists
-for web development. Want me to add it?"
+What would you like to do first?
+- Create a custom agent for your project
+- Browse pre-built sources to get started"
 ```
 
 ### No Sources Configured
@@ -236,18 +236,17 @@ for web development. Want me to add it?"
 
 **Flow**:
 ```
-"Your sources are empty - no agents to show yet.
+"No agents yet. Want to create one for your project, or browse pre-built sources?
 
-Let's fix that. Choose a starting point:
+1. Create a custom agent (I'll help you build one)
+2. Browse pre-built sources (official sources and community repos)
 
-1. fullstack-guild - Web development (React, Node, databases)
-2. game-dev-guild - Game development (Phaser, game design)
-3. content-guild - Writing and marketing
-
-Or give me a git URL to add a custom source."
+What would you like to do?"
 ```
 
-**Then**: Delegate to `manage-sources` skill for the actual source addition.
+**Then**:
+- If create: Delegate to `create-agent` skill
+- If browse: Delegate to `manage-sources` skill for source addition
 
 ---
 
@@ -341,9 +340,9 @@ Want me to set it up now? It just takes a moment."
 "I don't see 'database-methodology' in your sources.
 
 You can:
-1. Add a guild that has it (fullstack-guild includes database specialists)
-2. Create a custom database agent
-3. Search other guilds for similar agents"
+1. Create a custom database agent (I'll help you build one)
+2. Browse sources for pre-built options (check official and community sources)
+3. Search available sources for similar agents"
 ```
 
 ### Ambiguous Location
@@ -375,10 +374,11 @@ User: "yes"
 
 You: "Done! Created your workspace at ~/cami-workspace/
 
-Next step: Add some agent sources. The fullstack-guild has great specialists
-for web development. Want me to add it?"
+What would you like to do first?
+- Create a custom agent for your project
+- Browse pre-built sources to get started"
 
-User: "yes"
+User: "browse sources"
 
 You: "Adding a new source - I'll walk you through it."
 [Delegate to manage-sources skill]

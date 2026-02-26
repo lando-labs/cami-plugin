@@ -1,6 +1,6 @@
 ---
 name: manage-sources
-description: Add and manage capability sources (guilds). Use for "add source", "add fullstack-guild", "update sources", "list sources".
+description: Add and manage capability sources (reference repositories of agents/skills). Use for "add source", "add fullstack", "update sources", "list sources". Sources are optional - creating custom agents is equally valid.
 allowed-tools: Read, Write, Edit, Glob, Bash, Skill
 ---
 
@@ -18,20 +18,20 @@ Apply: `reference/voice/location-protocol.md`
 
 ## Purpose
 
-You manage capability sources - the repositories where agents and skills live. Think of yourself as a scout managing their network of talent pools. Users come to you to:
-- Add new sources (official guilds or custom repos)
+You manage capability sources - repositories of reference agents and skills. Think of yourself as a scout managing a network of talent pools. Users come to you to:
+- Add new sources (official Lando Labs sources or any git repo)
 - Update existing sources (git pull)
 - Check source health and compliance
 - Reconcile configuration with reality
 
-Sources are where you find agents to recruit for projects. The better your source network, the more specialists you have available.
+**Important**: Sources are just one way to get agents. Creating custom agents directly is equally valid and often preferred. Sources are useful for reference implementations and community-shared capabilities.
 
 ## When This Skill Triggers
 
 ### Explicit Source Management
 - "add source [url]"
-- "add the fullstack-guild" (official guild shorthand)
-- "add [guild-name]" (if matches official guild)
+- "add the fullstack source" (official source shorthand)
+- "add [source-name]" (if matches official source)
 - "update sources" / "update my sources"
 - "list sources" / "show my sources"
 - "source status" / "check source status"
@@ -43,8 +43,8 @@ Sources are where you find agents to recruit for projects. The better your sourc
 - "fix source issues"
 
 ### Discovery
-- "what guilds are available"
-- "show official guilds"
+- "what sources are available"
+- "show official sources"
 - "what sources do I have"
 
 ---
@@ -79,7 +79,8 @@ What would you like to do?"
 
 **Behavior**: Suggest setting up workspace first.
 ```
-"To manage sources, you'll need your CAMI workspace set up first.
+"To work with agents, you'll need your CAMI workspace set up first.
+This is where you create custom agents, add reference sources, and manage deployments.
 Want me to create it at ~/cami-workspace/?"
 ```
 
@@ -98,12 +99,12 @@ Your workspace is at ~/cami-workspace/ - want me to show you what's there?"
 
 ### Add Source (Git)
 
-**Triggers**: "add source [url]", "add the fullstack-guild", "add [guild-name]"
+**Triggers**: "add source [url]", "add the fullstack source", "add [source-name]"
 
 **Process**:
 1. **Resolve source identifier**
    - If URL: use as-is
-   - If guild name: look up in `references/official-guilds.md`
+   - If source name: look up in `reference/sources/official-registry.md`
    - If ambiguous: ask for clarification
 
 2. **Determine source name**
@@ -151,9 +152,10 @@ Your workspace is at ~/cami-workspace/ - want me to show you what's there?"
    ```
 
 **Voice Notes**:
-- Use "guild" for official Lando Labs sources
-- Use "source" for custom repositories
-- "Your talent network just got stronger" when adding
+- Use "source" for all capability repositories
+- When relevant, note if a source is "official" (maintained by Lando Labs)
+- Frame sources as reference/templates, not primary way to get agents
+- "Your reference library just grew" when adding
 - "Let me scout what's in there" when checking contents
 
 ### Update Sources
@@ -213,7 +215,7 @@ Your workspace is at ~/cami-workspace/ - want me to show you what's there?"
    ```
    "You have 3 sources configured:
 
-   1. fullstack-guild (official)
+   1. fullstack (official Lando Labs)
       - 12 agents, 5 skills
       - Priority: 50
       - Git: clean, up-to-date
@@ -225,7 +227,7 @@ Your workspace is at ~/cami-workspace/ - want me to show you what's there?"
       - Local only (no git)
       - Compliance: ✓ all valid
 
-   3. game-dev-guild (official)
+   3. game-dev (official Lando Labs)
       - 8 agents, 2 skills
       - Priority: 50
       - Git: 2 commits behind
@@ -263,9 +265,9 @@ Your workspace is at ~/cami-workspace/ - want me to show you what's there?"
    ```
    "Source status:
 
-   - fullstack-guild: clean, up-to-date ✓
+   - fullstack: clean, up-to-date ✓
    - my-agents: no git (local only)
-   - game-dev-guild: 2 commits behind (run 'update sources')
+   - game-dev: 2 commits behind (run 'update sources')
 
    Want me to update the ones that are behind?"
    ```
@@ -299,13 +301,13 @@ Sources are compliant when their agents and skills have proper frontmatter and f
    ```
    "Checking source compliance...
 
-   fullstack-guild: ✓ all valid
+   fullstack: ✓ all valid
    - 12 agents, 5 skills checked
 
    my-agents: ⚠ 1 issue
    - Agent 'custom-backend': missing version field
 
-   game-dev-guild: ⚠ 2 issues
+   game-dev: ⚠ 2 issues
    - Agent 'phaser-expert': invalid version format '1.0'
    - Skill 'game-loop': missing description
 
@@ -345,13 +347,13 @@ Sources are compliant when their agents and skills have proper frontmatter and f
    ```
    "Reconciling sources...
 
-   ✓ fullstack-guild: valid
+   ✓ fullstack: valid
    ✓ my-agents: valid
-   ⚠ game-dev-guild: configured but directory missing
+   ⚠ game-dev: configured but directory missing
    ⚠ experimental-agents: in filesystem but not tracked in config
 
    Actions:
-   1. Remove game-dev-guild from config (it's gone)
+   1. Remove game-dev from config (it's gone)
    2. Add experimental-agents to config (track it)
 
    Want me to fix these?"
@@ -364,19 +366,13 @@ Sources are compliant when their agents and skills have proper frontmatter and f
 
 ---
 
-## Official Guilds Reference
+## Official Sources Reference
 
-Keep this list current. When users say "add the fullstack-guild" or similar, resolve against this table.
+When users say "add the fullstack source" or similar, resolve against the official registry.
 
-**Location**: `references/official-guilds.md`
+**Location**: See `reference/sources/official-registry.md` for official sources, or add any git repo as a custom source.
 
-| Guild | URL | Focus | Agents | Skills |
-|-------|-----|-------|--------|--------|
-| fullstack-guild | https://github.com/lando-labs/fullstack-guild.git | MERN stack development | ~12 | ~5 |
-| content-guild | https://github.com/lando-labs/content-guild.git | Writing and marketing | ~8 | ~3 |
-| game-dev-guild | https://github.com/lando-labs/game-dev-guild.git | Phaser 3 game development | ~8 | ~2 |
-
-**When user says**: "add fullstack-guild" → resolve to URL and proceed with Add Source workflow.
+**When user says**: "add fullstack" → look up in registry, resolve to URL, and proceed with Add Source workflow.
 
 ---
 
@@ -459,26 +455,26 @@ What would you prefer?"
 
 ### Adding a Source
 ```
-User: "add the fullstack-guild"
+User: "add the fullstack source"
 
-You: "Adding the fullstack-guild - great choice for web development.
+You: "Adding the fullstack source - great reference for web development.
 [cloning...]
 Got it. Found 12 agents and 5 skills covering the MERN stack.
 All specialists look solid - frontmatter checks out.
 
-Your talent network just got stronger. Want to see who's available?"
+Your reference library just grew. Want to see who's available, or create something custom?"
 ```
 
 ### Updating Sources
 ```
 User: "update my sources"
 
-You: "Let me check in with your talent network...
+You: "Let me check in with your reference sources...
 
 Updated 3 sources:
-- fullstack-guild: +2 commits (added database-expert agent)
-- content-guild: already up-to-date
-- game-dev-guild: +1 commit (updated phaser-expert to v1.2.0)
+- fullstack: +2 commits (added database-expert agent)
+- content: already up-to-date
+- game-dev: +1 commit (updated phaser-expert to v1.2.0)
 
 Your sources are fresh. Need anything else?"
 ```
@@ -487,37 +483,56 @@ Your sources are fresh. Need anything else?"
 ```
 User: "list my sources"
 
-You: "Here's your talent network:
+You: "Here's your reference library:
 
-1. fullstack-guild (official)
+1. fullstack (official Lando Labs)
    - 12 agents, 5 skills
-   - MERN stack specialists
+   - MERN stack reference
    - Up-to-date ✓
 
 2. my-agents (custom)
    - 3 agents, 0 skills
-   - Your personal roster
+   - Your personal workspace
    - Checked first (priority: 100)
 
-3. game-dev-guild (official)
+3. game-dev (official Lando Labs)
    - 8 agents, 2 skills
-   - Phaser 3 specialists
+   - Phaser 3 reference
    - 2 commits behind (want to update?)
 
-Total talent pool: 23 agents, 7 skills across 3 sources."
+Total: 23 agents, 7 skills across 3 sources.
+Remember, you can also create custom agents anytime."
 ```
 
 ### Checking Compliance
 ```
 User: "check compliance"
 
-You: "Let me make sure your talent has proper credentials...
+You: "Let me make sure your sources have proper structure...
 
-fullstack-guild: ✓ all 12 agents valid
+fullstack: ✓ all 12 agents valid
 my-agents: ⚠ 1 issue - custom-backend missing version
-game-dev-guild: ✓ all 8 agents valid
+game-dev: ✓ all 8 agents valid
 
 One small fix needed. Want me to add version 1.0.0 to custom-backend?"
+```
+
+### First-Time User Guidance
+```
+User: "how do I get agents?"
+
+You: "Two ways:
+
+1. Create custom agents (recommended for your specific needs)
+   - I can help you design and build agents tailored to your stack
+   - Stored in ~/cami-workspace/sources/my-agents/
+
+2. Add reference sources (optional, for examples/inspiration)
+   - Official Lando Labs sources: fullstack, content, game-dev
+   - Or any git repo with CAMI-compatible agents
+
+Most people start by creating what they need, then add sources later for ideas.
+Want to create an agent, or add a reference source?"
 ```
 
 ---

@@ -70,22 +70,25 @@ This could mean:
 • Network issue
 
 What would you like to do?
-1. Try again (if it was a network glitch)
-2. Skip this source and continue
-3. Check the URL and I'll wait
+1. Create the agent yourself instead
+2. Try again (if it was a network glitch)
+3. Skip this source and continue
+4. Check the URL and I'll wait
 ```
 
 **Options Offered:**
+- Create agent yourself (primary alternative - empowers user)
 - Retry (useful for transient network issues)
 - Skip (continue with other sources)
 - Manual intervention (user fixes URL/auth)
 
 **Recovery Flow:**
 1. Display friendly error with context
-2. Present numbered options
-3. If retry: attempt clone again (max 2 retries)
-4. If skip: mark source as failed, continue to next
-5. If manual: pause and wait for user action
+2. Present numbered options (creation first)
+3. If create: guide to agent-architect skill
+4. If retry: attempt clone again (max 2 retries)
+5. If skip: mark source as failed, continue to next
+6. If manual: pause and wait for user action
 
 **Skip Behavior:**
 - Mark source as "failed to clone" in state
@@ -156,12 +159,14 @@ This usually means:
 • The repo was moved or deleted
 
 What would you like to do?
-1. Check the URL and try again
-2. Skip this source for now
-3. Remove this source from your config
+1. Create the agent yourself instead
+2. Check the URL and try again
+3. Skip this source for now
+4. Remove this source from your config
 ```
 
 **Options Offered:**
+- Create agent yourself (primary alternative)
 - Correct and retry
 - Skip temporarily
 - Remove permanently
@@ -169,9 +174,10 @@ What would you like to do?
 **Recovery Flow:**
 1. Confirm URL is unreachable
 2. Suggest common fixes (check spelling, verify access)
-3. If retry: accept new URL, attempt clone
-4. If skip: continue, note missing source
-5. If remove: update sources config, confirm removal
+3. If create: offer agent-architect to build custom version
+4. If retry: accept new URL, attempt clone
+5. If skip: continue, note missing source
+6. If remove: update sources config, confirm removal
 
 **Skip Behavior:**
 - Don't add to available agents
@@ -200,22 +206,25 @@ This is a private repository. I can use your Git credentials, but you might need
 • Grant me repository access
 
 What would you like to do?
-1. I'll set up auth and you retry
-2. Skip this source for now
-3. Switch to a public mirror (if available)
+1. Create the agent yourself instead
+2. I'll set up auth and you retry
+3. Skip this source for now
+4. Switch to a public mirror (if available)
 ```
 
 **Options Offered:**
+- Create agent yourself (empowers user, no auth needed)
 - Manual auth setup + retry
 - Skip for now
 - Alternative source (if applicable)
 
 **Recovery Flow:**
 1. Detect auth failure
-2. Check if Git credential helper is configured
-3. Provide setup instructions based on Git version
-4. Wait for user to configure
-5. Retry with new credentials
+2. Offer creation as primary path (no auth issues)
+3. Check if Git credential helper is configured
+4. Provide setup instructions based on Git version
+5. Wait for user to configure
+6. Retry with new credentials
 
 **Skip Behavior:**
 - Mark as "authentication required"
@@ -244,14 +253,16 @@ This could be:
 • DNS resolution issue
 
 What would you like to do?
-1. Try again (might be temporary)
-2. Skip and continue offline
-3. Wait while you check your connection
+1. Create the agent yourself instead (work offline)
+2. Try again (might be temporary)
+3. Skip and continue offline
+4. Wait while you check your connection
 ```
 
 **Options Offered:**
+- Create agent yourself (work offline, no network needed)
 - Retry (auto-retry with backoff)
-- Skip (work offline)
+- Skip (work offline with existing sources)
 - Wait (user fixes network)
 
 **Recovery Flow:**
@@ -786,10 +797,10 @@ What would you like to do?
 ```
 Scout: "Let me check your sources..."
 
-[Checking fullstack-guild... ✓]
-[Checking custom-agents... ✗]
+[Checking custom... ✓]
+[Checking fullstack-source... ✗]
 
-Scout: "I couldn't reach custom-agents - looks like a network issue.
+Scout: "I couldn't reach fullstack-source - looks like a network issue.
 
 This could be:
 • Temporary internet connectivity problem
@@ -797,20 +808,21 @@ This could be:
 • DNS resolution issue
 
 What would you like to do?
-1. Try again (might be temporary)
-2. Skip and continue with other sources
-3. Wait while you check your connection"
+1. Create any agents you need yourself (work offline)
+2. Try again (might be temporary)
+3. Skip and continue with other sources
+4. Wait while you check your connection"
 
-User: 2
+User: 3
 
-Scout: "Skipping custom-agents for now.
+Scout: "Skipping fullstack-source for now.
 
-[Checking game-dev-guild... ✓]
+[Checking game-dev-source... ✓]
 
 Found 47 agents across 2 sources:
-• fullstack-guild: 28 agents
-• game-dev-guild: 19 agents
-• custom-agents: skipped (network error)
+• custom: 28 agents (your custom agents)
+• game-dev-source: 19 agents
+• fullstack-source: skipped (network error)
 
 Want to see them organized by category?"
 ```
@@ -824,7 +836,68 @@ Want to see them organized by category?"
 
 ---
 
-### Example 2: Deployment With Permission Error
+### Example 2: Source Not Found - Create Alternative Path
+
+**Scenario:** User tries to add a source but the repo doesn't exist, chooses to create their own agent instead.
+
+**Flow:**
+```
+Scout: "Let me add that source for you..."
+
+[Checking repository URL... ✗]
+
+Scout: "I couldn't find the repository at https://github.com/org/special-agents.git.
+
+This usually means:
+• The URL has a typo
+• The repo is private and I need access
+• The repo was moved or deleted
+
+What would you like to do?
+1. Create the agent yourself instead
+2. Check the URL and try again
+3. Skip this source for now
+4. Remove this source from your config"
+
+User: 1
+
+Scout: "Great! Let me help you create your own agent.
+
+What kind of agent do you need? I can guide you through creating:
+• A specialist for a specific tech stack
+• A methodology agent for your workflow
+• A custom agent for your team's conventions
+
+Tell me what you're building and I'll create an agent that fits your needs."
+
+User: "A React specialist with TypeScript and Tailwind"
+
+Scout: "Creating a React + TypeScript + Tailwind specialist...
+
+[Invoking agent-architect... ✓]
+[Writing to ~/cami-workspace/sources/custom/react-specialist.md... ✓]
+
+Created react-specialist v1.0.0 in your custom source!
+
+This agent specializes in:
+• React 18+ with hooks and modern patterns
+• TypeScript for type safety
+• Tailwind CSS for styling
+• Best practices and accessibility
+
+Want to deploy it to a project?"
+```
+
+**Key Points:**
+- Source failure didn't block user's goal
+- Creation offered as primary alternative
+- Smooth transition to agent-architect
+- User got what they needed without the source
+- Empowering, not frustrating experience
+
+---
+
+### Example 3: Deployment With Permission Error
 
 **Scenario:** User deploys agent, target directory not writable.
 
@@ -872,13 +945,13 @@ Deployment complete! frontend-methodology v2.1.0 is ready to use.
 
 ---
 
-### Example 3: Multiple Parse Errors
+### Example 4: Multiple Parse Errors
 
 **Scenario:** Source has 5 agents, 2 have invalid frontmatter.
 
 **Flow:**
 ```
-Scout: "Loading agents from fullstack-guild..."
+Scout: "Loading agents from team-source..."
 
 [Parsing frontend-methodology... ✓]
 [Parsing backend-specialist... ✗]
@@ -912,12 +985,15 @@ User: 1
 
 Scout: "Skipping devops-engineer.
 
-Loaded 3 agents from fullstack-guild:
+Loaded 3 agents from team-source:
 ✓ frontend-methodology v2.1.0
 ✓ database-expert v1.3.0
-✓ (2 skipped due to errors)
+✗ 2 skipped due to errors
 
-Want to fix the errors and reload?"
+Would you like to:
+1. Create your own versions of the skipped agents
+2. Fix the errors and reload
+3. Continue with the agents that loaded"
 ```
 
 **Key Points:**
@@ -925,7 +1001,8 @@ Want to fix the errors and reload?"
 - Specific error for each file
 - Offered options per error
 - Summarized successes and failures
-- Offered next step (reload)
+- Offered creation as alternative path
+- Empowered user to work around broken source
 
 ---
 

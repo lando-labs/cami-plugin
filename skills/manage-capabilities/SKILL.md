@@ -69,11 +69,11 @@ Both are managed uniformly by this skill. The user doesn't need to distinguish u
 
 ### Sources: Where Capabilities Live
 
-Capabilities are sourced from:
-1. **Official guilds** - Lando Labs maintained (fullstack-guild, game-dev-guild, etc.)
-2. **Custom sources** - User's own collections (`my-agents`, etc.)
+Capabilities can be:
+1. **Created for your project** - Custom-built agents and skills tailored to your needs
+2. **Sourced from collections** - Pre-built capabilities from Lando Labs or other sources (`my-agents`, etc.)
 
-Sources are managed by the `manage-sources` skill, but you read from them.
+You can create new capabilities or browse available sources. Sources are managed by the `manage-sources` skill.
 
 ### Manifest: Version Tracking
 
@@ -155,8 +155,9 @@ Want to deploy more, scan for updates, or see what's available?"
 **Opening Dialogue**:
 ```
 "This project doesn't have CAMI set up yet. Would you like me to:
-1. Set up CAMI and deploy recommended agents for this stack
-2. Just show what's available first"
+1. Set up CAMI and create agents for this stack
+2. Set up CAMI and deploy pre-built agents
+3. Just show what's available first"
 ```
 
 ### NAVIGATION MODE
@@ -171,8 +172,22 @@ Want to deploy more, scan for updates, or see what's available?"
 "Which project would you like to work on? I can:
 1. Find your Claude Code projects
 2. Navigate to a specific project (tell me which)
-3. Go to your workspace"
+3. Go to your workspace
+4. Create an agent for a specific need"
 ```
+
+---
+
+## Philosophy: Creation-First UX
+
+When users need capabilities that don't exist, **creation should feel like the natural first choice**:
+
+- **Agent not found?** Offer to create it first, browse sources second
+- **Zero state (no agents)?** Lead with "create for your project", then "or browse pre-built"
+- **Initialization mode?** Present creation and deployment as equal options
+- **Recommendations?** Include "create custom" alongside pre-built options
+
+This doesn't mean hiding pre-built sources - it means **creation is presented as equally accessible**, not as a fallback.
 
 ---
 
@@ -286,7 +301,21 @@ You: "Adding frontend-methodology to your roster...
 
 Done. You now have 4 capabilities deployed.
 
-Want to deploy more or start building?"
+Want to deploy more, create a custom agent, or start building?"
+```
+
+**When Recommending Agents**:
+Always present creation alongside pre-built options:
+```
+User: "I need help with testing"
+
+You: "I can help with that:
+
+1. Create a custom testing agent tailored to your stack
+2. Deploy testing-methodology v1.0.0 from fullstack-guild (general testing patterns)
+3. Browse all testing-related agents from sources
+
+What fits your needs best?"
 ```
 
 ---
@@ -458,15 +487,15 @@ You: [Search sources, not found]
 You: "I don't see agent-name in your sources.
 
 You can:
-1. Add a source that has it (I can help)
-2. Create a custom agent-name agent (I can help)
+1. Create a custom agent-name agent (I can help)
+2. Browse available sources that might have it
 3. Tell me where to find it
 
 What would you like to do?"
 
-User: "add a source"
+User: "browse sources"
 
-You: "Looks like you want to add a source. Let me help with that."
+You: "Looks like you want to explore available sources. Let me help with that."
 [Handoff to manage-sources]
 ```
 
@@ -485,9 +514,11 @@ You: "Looks like you want to add a source. Let me help with that."
 User: "deploy stripe-integration"
 You: [Search sources, not found]
 
-You: "I don't see stripe-integration in your sources. Want me to help create it?"
+You: "I don't see stripe-integration in your sources.
 
-User: "yes"
+Want me to create it for you? Or I can help you browse available sources to see if there's something similar."
+
+User: "create it"
 
 You: [Handoff to create-agent with context: name="stripe-integration"]
 ```
@@ -502,8 +533,9 @@ Always embody the scout persona from `reference/voice/scout-persona.md`:
 - "Let me check your roster..."
 - "Adding [agent] to your roster"
 - "Your current lineup includes..."
-- "Available lineup from [source]..."
-- "I'd recommend [agent] because [specific reason]"
+- "Available from [source]..."
+- "Want me to create one for your project?"
+- "I can create that for you, or browse pre-built options"
 - "That's a solid choice for [reason]"
 - "You're running the latest"
 - "3 updates available"
@@ -588,9 +620,9 @@ You have these sources configured:
 - my-agents
 
 Want to:
-1. Add a source that has it
-2. Create a custom agent-name agent
-3. Search all available guilds for it"
+1. Create a custom agent-name agent
+2. Browse available sources that might have it
+3. Search all available sources for it"
 ```
 
 ### Project Not Found
@@ -618,16 +650,16 @@ Which one?"
 ```
 User: "list agents"
 
-You: "Your sources are empty - no agents to show yet.
+You: "No agents deployed yet.
 
-Let's fix that. Choose a starting point:
-1. fullstack-guild - Web development (React, Node, databases)
-2. game-dev-guild - Game development (Phaser, game design)
-3. content-guild - Writing and marketing
+Let's get you set up:
+1. Create an agent for your project (I'll ask about your needs)
+2. Browse pre-built agent sources
+3. Import agents from another project
 
-Or give me a git URL to add a custom source."
+What would you like to do?"
 
-[Then handoff to manage-sources]
+[Based on choice, handoff to create-agent or manage-sources]
 ```
 
 ### CAMI Not Set Up (Initialization Mode)
@@ -637,11 +669,12 @@ User: "deploy agent-name"
 You: "This project doesn't have CAMI set up yet.
 
 I detected [tech stack] from your project files.
-For this stack, I'd recommend:
-- [agent-name] ([reason])
-- [agent-name] ([reason])
 
-Want me to set up CAMI and deploy these? It just takes a moment."
+I can:
+1. Create custom agents for this stack (tailored to your needs)
+2. Deploy pre-built agents recommended for [tech stack]
+
+Which would you prefer?"
 ```
 
 ---
