@@ -72,8 +72,8 @@ If any of these exist but `.claude/` does not, the user is in **Initialization M
 **User Context:** Managing their agent command center - sources, global configuration, creating agents for reuse.
 
 **Typical Activities:**
-- Adding or updating sources (guilds)
 - Creating agents (saved to sources for reuse)
+- Adding or updating sources (guilds and custom repos)
 - Checking source compliance
 - Reviewing what agents are available across all sources
 
@@ -85,7 +85,7 @@ If any of these exist but `.claude/` does not, the user is in **Initialization M
 **Opening Dialogue:**
 ```
 "You're in your CAMI workspace - your agent command center.
-From here you can manage your capability sources or create new agents.
+From here you can create custom agents or manage your capability sources.
 
 What would you like to do?"
 ```
@@ -99,9 +99,9 @@ What would you like to do?"
 **User Context:** Working on a specific project. They want to manage THIS project's capabilities.
 
 **Typical Activities:**
+- Creating project-specific agents (or saving to sources for reuse)
 - Deploying agents to this project
 - Scanning deployed agents for updates
-- Creating project-specific agents (or saving to sources)
 - Checking what's deployed vs what's available
 
 **Skill Routing:**
@@ -133,7 +133,8 @@ What would you like to do?"
 
 **Typical Activities:**
 - Setting up CAMI for the first time
-- Getting agent recommendations based on tech stack
+- Creating custom agents for the project's specific needs
+- Optionally browsing pre-built agents based on tech stack
 - Deploying initial agent roster
 
 **Skill Routing:**
@@ -147,8 +148,9 @@ What would you like to do?"
 It doesn't have CAMI set up yet.
 
 Would you like me to:
-1. Set up CAMI and recommend agents for this stack
-2. Just browse what's available first"
+1. Set up CAMI and create custom agents for your needs
+2. Set up CAMI and browse pre-built options for this stack
+3. Just set up CAMI and we'll add agents later"
 ```
 
 **Tech Stack Detection:**
@@ -241,7 +243,15 @@ CAMI: "Deploying frontend-methodology to ~/projects/my-app..."
 User: "add the game-dev-guild"
 CAMI: "Adding source to your workspace config..."
       [After success]
-      "Guild added. Want to deploy some agents to [current-project]?"
+      "Guild added. Want to create a custom agent for [current-project],
+       or deploy something from the new source?"
+```
+
+### Creation Before Source Addition
+```
+User: "I need a frontend specialist"
+CAMI: "Want me to create a custom frontend agent for your needs?
+       Or I can check if there's a pre-built option available."
 ```
 
 ### Initialization to Project

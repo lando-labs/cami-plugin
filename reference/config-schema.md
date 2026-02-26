@@ -22,20 +22,20 @@ Users should **never** be asked to:
 - Set up config files before using CAMI
 
 Instead, CAMI creates its configuration **automatically** when users perform their first meaningful action:
-- Add their first source/guild
-- Deploy their first agent
 - Create their first custom agent
+- Deploy their first agent
+- Add their first source
 
 The user's first experience should be:
 ```
-User: "Add the fullstack guild"
-Claude: *Adds source, auto-creates ~/cami-workspace/config.json behind the scenes*
-Claude: "Added fullstack-guild with 5 agents available"
+User: "Create a frontend specialist for React"
+Claude: *Creates agent, auto-creates ~/cami-workspace/config.json behind the scenes*
+Claude: "Created frontend-specialist in your custom source"
 ```
 
 **NOT**:
 ```
-User: "Add the fullstack guild"
+User: "Create a frontend specialist"
 Claude: "First, you need to initialize your workspace..."
 ```
 
@@ -45,20 +45,20 @@ Claude: "First, you need to initialize your workspace..."
 
 Config file is created when the user:
 
-1. **Adds First Source/Guild**:
-   - Trigger: `add_source` or "add the X guild"
-   - Creates: `~/cami-workspace/config.json` + `~/cami-workspace/sources/` directory
-   - Initial state: One source entry, no deployments
+1. **Creates First Custom Agent**:
+   - Trigger: Agent creation via agent-architect skill
+   - Creates: `~/cami-workspace/config.json` + `~/cami-workspace/sources/custom/` directory
+   - Priority: 10 (highest priority - custom agents are the intended primary)
 
 2. **Deploys First Agent**:
    - Trigger: `deploy_agents` or "deploy frontend agent to my project"
    - Creates: Config if missing, adds deployment entry
    - Updates: Deployment tracking for the target project
 
-3. **Creates First Custom Agent**:
-   - Trigger: Agent creation via agent-architect skill
-   - Creates: Config if missing, adds custom source at `~/cami-workspace/sources/custom/`
-   - Priority: 10 (overrides guilds)
+3. **Adds First Source**:
+   - Trigger: `add_source` or "add the X source"
+   - Creates: Config if missing, adds source to `~/cami-workspace/sources/` directory
+   - Initial state: One source entry, no deployments
 
 **Implementation Detail**:
 ```javascript
@@ -93,9 +93,9 @@ function addSource(name, gitUrl) {
   "version": "1.0.0",
   "sources": [
     {
-      "name": "fullstack-guild",
-      "path": "~/cami-workspace/sources/fullstack-guild",
-      "git": "https://github.com/lando-labs/fullstack-guild.git",
+      "name": "fullstack-source",
+      "path": "~/cami-workspace/sources/fullstack-source",
+      "git": "https://github.com/lando-labs/fullstack-source.git",
       "priority": 100,
       "added": "2026-02-25T10:30:00Z"
     },
@@ -111,7 +111,7 @@ function addSource(name, gitUrl) {
     {
       "project": "~/projects/my-app",
       "agents": [
-        "fullstack-guild:frontend-methodology",
+        "fullstack-source:frontend-methodology",
         "custom:my-team-agent"
       ],
       "lastUpdated": "2026-02-25T10:30:00Z"
@@ -141,9 +141,9 @@ function addSource(name, gitUrl) {
 | `added` | string | Yes | ISO 8601 timestamp when source was added |
 
 **Source Priority Defaults**:
-- Custom agents: **10** (highest priority, overrides everything)
+- Custom agents: **10** (highest priority - this is the intended primary path)
 - Team/organization sources: **50** (medium priority)
-- Public guilds: **100** (lowest priority, default)
+- Public sources: **100** (lowest priority, default)
 
 #### Deployment Object
 
@@ -154,7 +154,7 @@ function addSource(name, gitUrl) {
 | `lastUpdated` | string | Yes | ISO 8601 timestamp of last deployment change |
 
 **Agent Identifier Format**: `source-name:agent-name`
-- Example: `fullstack-guild:frontend-methodology`
+- Example: `fullstack-source:frontend-methodology`
 - Example: `custom:my-agent`
 
 ---
@@ -167,9 +167,9 @@ When the **same agent name** exists in multiple sources, the source with the **l
 
 **Priority Tiers**:
 ```
-10  = Custom agents (user-created, highest priority)
+10  = Custom agents (user-created - the intended primary path)
 50  = Team/organization sources (medium priority)
-100 = Public guilds (lowest priority, default)
+100 = Public sources (lowest priority, default)
 ```
 
 ### Example Scenario
@@ -179,9 +179,9 @@ When the **same agent name** exists in multiple sources, the source with the **l
 {
   "sources": [
     {
-      "name": "fullstack-guild",
-      "priority": 100,
-      "path": "~/cami-workspace/sources/fullstack-guild"
+      "name": "custom",
+      "priority": 10,
+      "path": "~/cami-workspace/sources/custom"
     },
     {
       "name": "my-team",
@@ -189,9 +189,9 @@ When the **same agent name** exists in multiple sources, the source with the **l
       "path": "~/cami-workspace/sources/my-team"
     },
     {
-      "name": "custom",
-      "priority": 10,
-      "path": "~/cami-workspace/sources/custom"
+      "name": "fullstack-source",
+      "priority": 100,
+      "path": "~/cami-workspace/sources/fullstack-source"
     }
   ]
 }
@@ -200,15 +200,15 @@ When the **same agent name** exists in multiple sources, the source with the **l
 **Agent Resolution**:
 
 If `frontend.md` exists in all three sources:
-1. CAMI uses `custom/frontend.md` (priority 10)
+1. CAMI uses `custom/frontend.md` (priority 10 - user's own agents win)
 2. If custom doesn't have it, uses `my-team/frontend.md` (priority 50)
-3. If neither have it, uses `fullstack-guild/frontend.md` (priority 100)
+3. If neither have it, uses `fullstack-source/frontend.md` (priority 100)
 
 **User Control**:
 
 Users can override priority when adding sources:
 ```
-User: "Add the fullstack guild with priority 20"
+User: "Add the fullstack source with priority 20"
 Claude: *Adds source with priority 20 instead of default 100*
 ```
 
@@ -220,27 +220,27 @@ CAMI auto-creates this structure when needed:
 
 ```
 ~/cami-workspace/
-├── config.json              ← Auto-created on first source/deploy/create
+├── config.json              ← Auto-created on first create/deploy/source-add
 └── sources/                 ← Auto-created with config.json
-    ├── fullstack-guild/     ← Git cloned when source added
+    ├── custom/              ← Auto-created when first custom agent created (primary path)
+    │   ├── my-agent.md      ← User-created agents
+    │   └── ...
+    ├── fullstack-source/    ← Git cloned when source added
     │   ├── .git/
     │   ├── CLAUDE.md
     │   ├── STRATEGIES.yaml
     │   ├── frontend.md
     │   ├── backend.md
     │   └── ...
-    ├── game-dev-guild/      ← Git cloned when source added
-    │   └── ...
-    └── custom/              ← Auto-created when first custom agent created
-        ├── my-agent.md      ← User-created agents
+    └── game-dev-source/     ← Git cloned when source added
         └── ...
 ```
 
 **Directory Creation Rules**:
 - `~/cami-workspace/` created when config first needed
 - `sources/` created alongside config.json
-- `sources/[guild-name]/` created when guild added (git clone)
-- `sources/custom/` created when first custom agent created
+- `sources/custom/` created when first custom agent created (most common first action)
+- `sources/[source-name]/` created when source added (git clone)
 
 **No Manual Setup Required**: Users never create directories manually.
 
@@ -260,7 +260,7 @@ CAMI auto-creates this structure when needed:
 export CAMI_WORKSPACE_PATH=~/my-custom-workspace
 
 # CAMI will use this location instead
-cami add fullstack-guild
+cami create agent frontend-specialist
 # Creates: ~/my-custom-workspace/config.json
 ```
 
@@ -331,7 +331,7 @@ function loadConfig(configPath) {
 {
   "sources": [
     {
-      "name": "fullstack-guild",
+      "name": "fullstack-source",
       "deployments": [...]  // ❌ Rejected - couples sources to deployments
     }
   ]
@@ -363,8 +363,8 @@ function loadConfig(configPath) {
 - **Namespacing**: Prevents collisions between sources
 
 **Examples**:
-- `fullstack-guild:frontend-methodology`
-- `game-dev-guild:phaser-specialist`
+- `fullstack-source:frontend-methodology`
+- `game-dev-source:phaser-specialist`
 - `custom:my-custom-agent`
 
 **Deployment Tracking**:
@@ -374,8 +374,8 @@ function loadConfig(configPath) {
     {
       "project": "~/projects/my-app",
       "agents": [
-        "fullstack-guild:frontend-methodology",
-        "fullstack-guild:backend-methodology",
+        "fullstack-source:frontend-methodology",
+        "fullstack-source:backend-methodology",
         "custom:my-team-conventions"
       ]
     }
@@ -438,15 +438,15 @@ Details: Unexpected token '}' in JSON at position 245
 ```
 Error: Invalid config schema
 Missing required field: sources[0].priority
-Source: fullstack-guild
+Source: fullstack-source
 ```
 
 **Invalid Source Reference**:
 ```
 Error: Deployment references unknown source
-Agent: unknown-guild:some-agent
+Agent: unknown-source:some-agent
 Project: ~/projects/my-app
-Available sources: fullstack-guild, custom
+Available sources: fullstack-source, custom
 ```
 
 ---
@@ -481,8 +481,8 @@ The original CAMI MCP server used `config.yaml`. This plugin uses `config.json`.
 # config.yaml (old)
 workspace_path: ~/cami-workspace
 agent_sources:
-  - path: ~/cami-workspace/sources/fullstack-guild
-    git_url: https://github.com/lando-labs/fullstack-guild.git
+  - path: ~/cami-workspace/sources/fullstack-source
+    git_url: https://github.com/lando-labs/fullstack-source.git
 ```
 
 ```json
@@ -491,9 +491,9 @@ agent_sources:
   "version": "1.0.0",
   "sources": [
     {
-      "name": "fullstack-guild",
-      "path": "~/cami-workspace/sources/fullstack-guild",
-      "git": "https://github.com/lando-labs/fullstack-guild.git",
+      "name": "fullstack-source",
+      "path": "~/cami-workspace/sources/fullstack-source",
+      "git": "https://github.com/lando-labs/fullstack-source.git",
       "priority": 100,
       "added": "2026-02-25T10:30:00Z"
     }
@@ -542,8 +542,8 @@ if (config.version === "1.0.0") {
 
 ### Phase 2: Source Management
 
-- [ ] Add source to config when guild added
-- [ ] Set priority based on source type (custom=10, team=50, guild=100)
+- [ ] Add source to config when source added
+- [ ] Set priority based on source type (custom=10, team=50, source=100)
 - [ ] Record ISO 8601 timestamp in `added` field
 - [ ] Support custom priority via user override
 
@@ -590,8 +590,8 @@ if (config.version === "1.0.0") {
 
 1. **Fresh Install**:
    - No `~/cami-workspace/` exists
-   - User adds first guild
-   - Config auto-created with guild source
+   - User creates first custom agent
+   - Config auto-created with custom source
    - No errors, no prompts
 
 2. **Config Exists, Directory Missing**:
@@ -602,28 +602,28 @@ if (config.version === "1.0.0") {
 
 3. **Custom Workspace Path**:
    - `CAMI_WORKSPACE_PATH=~/custom-workspace`
-   - User adds guild
+   - User creates first agent
    - Config created at `~/custom-workspace/config.json`
 
 ### Priority Resolution Tests
 
-1. **Single Source**:
-   - Only `fullstack-guild` added
+1. **Single Source (Custom)**:
+   - Only `custom` source exists (user created their own agent)
    - `frontend` agent requested
-   - Uses `fullstack-guild:frontend`
+   - Uses `custom:frontend`
 
 2. **Multiple Sources, No Conflict**:
-   - `fullstack-guild` has `frontend`
-   - `game-dev-guild` has `phaser-specialist`
+   - `fullstack-source` has `frontend`
+   - `game-dev-source` has `phaser-specialist`
    - Both available, no conflict
 
 3. **Multiple Sources, With Conflict**:
-   - `fullstack-guild` (priority 100) has `frontend`
+   - `fullstack-source` (priority 100) has `frontend`
    - `custom` (priority 10) has `frontend`
    - CAMI uses `custom:frontend` (lower priority wins)
 
 4. **Custom Priority Override**:
-   - User sets `fullstack-guild` to priority 20
+   - User sets `fullstack-source` to priority 20
    - User has `custom` at priority 10
    - Custom still wins (10 < 20)
 
@@ -657,7 +657,7 @@ if (config.version === "1.0.0") {
    - Points to specific source
 
 3. **Invalid Source Reference**:
-   - Deployment references `unknown-guild:agent`
+   - Deployment references `unknown-source:agent`
    - CAMI warns about invalid reference
    - Lists available sources
 
@@ -668,7 +668,7 @@ if (config.version === "1.0.0") {
 - **UX Specification**: `/reference/ux/skill-architecture-spec.md`
 - **Scout Persona**: `/reference/voice/scout-persona.md`
 - **Plugin Structure**: `/.claude-plugin/plugin.json`
-- **Source Guilds**: See marketplace for available guilds
+- **Source Guilds**: See marketplace for available sources
 
 ---
 
@@ -691,9 +691,9 @@ if (config.version === "1.0.0") {
   "version": "1.0.0",
   "sources": [
     {
-      "name": "fullstack-guild",
-      "path": "~/cami-workspace/sources/fullstack-guild",
-      "git": "https://github.com/lando-labs/fullstack-guild.git",
+      "name": "fullstack-source",
+      "path": "~/cami-workspace/sources/fullstack-source",
+      "git": "https://github.com/lando-labs/fullstack-source.git",
       "priority": 100,
       "added": "2026-02-25T10:30:00Z"
     }
@@ -702,8 +702,8 @@ if (config.version === "1.0.0") {
     {
       "project": "~/projects/my-web-app",
       "agents": [
-        "fullstack-guild:frontend-methodology",
-        "fullstack-guild:backend-methodology"
+        "fullstack-source:frontend-methodology",
+        "fullstack-source:backend-methodology"
       ],
       "lastUpdated": "2026-02-25T10:45:00Z"
     }
@@ -718,16 +718,16 @@ if (config.version === "1.0.0") {
   "version": "1.0.0",
   "sources": [
     {
-      "name": "fullstack-guild",
-      "path": "~/cami-workspace/sources/fullstack-guild",
-      "git": "https://github.com/lando-labs/fullstack-guild.git",
+      "name": "fullstack-source",
+      "path": "~/cami-workspace/sources/fullstack-source",
+      "git": "https://github.com/lando-labs/fullstack-source.git",
       "priority": 100,
       "added": "2026-02-25T10:30:00Z"
     },
     {
-      "name": "game-dev-guild",
-      "path": "~/cami-workspace/sources/game-dev-guild",
-      "git": "https://github.com/lando-labs/game-dev-guild.git",
+      "name": "game-dev-source",
+      "path": "~/cami-workspace/sources/game-dev-source",
+      "git": "https://github.com/lando-labs/game-dev-source.git",
       "priority": 100,
       "added": "2026-02-25T11:00:00Z"
     },
@@ -743,7 +743,7 @@ if (config.version === "1.0.0") {
     {
       "project": "~/projects/web-app",
       "agents": [
-        "fullstack-guild:frontend-methodology",
+        "fullstack-source:frontend-methodology",
         "custom:team-conventions"
       ],
       "lastUpdated": "2026-02-25T12:30:00Z"
@@ -751,7 +751,7 @@ if (config.version === "1.0.0") {
     {
       "project": "~/projects/game",
       "agents": [
-        "game-dev-guild:phaser-specialist"
+        "game-dev-source:phaser-specialist"
       ],
       "lastUpdated": "2026-02-25T13:00:00Z"
     }

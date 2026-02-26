@@ -15,14 +15,15 @@ claude plugin install lando-labs/cami
 CAMI is your agent scout and orchestrator. Instead of manually copying agent files between projects, CAMI helps you discover, deploy, and manage teams of specialized Claude Code agents.
 
 Think of it as talent management for AI specialists:
-- Browse official guilds and custom sources
+- Create custom agents tailored to your projects
+- Browse pre-built sources when you need them
 - Get recommendations based on your tech stack
 - Deploy agents to projects with one command
 - Keep your roster updated across all projects
 
 **Skills-only architecture**: No binary installation, no MCP server configuration. Just install the plugin and start talking.
 
-**Zero-config**: Install and go. CAMI creates its workspace automatically when you add your first guild or deploy your first agent.
+**Zero-config**: Install and go. CAMI creates its workspace automatically when you create your first agent, add your first source, or deploy your first agent.
 
 ---
 
@@ -48,7 +49,31 @@ CAMI: "Hey! I'm CAMI - your agent scout. I help you build championship teams
       Ready to set it up? [y/n]"
 ```
 
-### Minute 2: Get recommendations
+### Minute 2: What are you building?
+
+**Option A: Create a custom agent**
+
+```
+You: "I'm building a React dashboard with complex state management"
+
+CAMI: "Perfect! Let me create a custom agent for you.
+
+      I'll make a state-management-specialist that understands:
+      - React Context vs Redux vs Zustand trade-offs
+      - Performance optimization patterns
+      - Testing stateful components
+
+      Sound good?"
+
+You: "Yes"
+
+CAMI: "Creating your workspace at ~/cami-workspace/
+      Creating state-management-specialist in sources/custom/... Done!
+
+      Ready to deploy it to this project?"
+```
+
+**Option B: Browse pre-built sources**
 
 ```
 You: "Yes. Scout this project."
@@ -65,6 +90,17 @@ CAMI: "Done! Created your workspace at ~/cami-workspace/
 ```
 
 ### Minute 3: Agents deployed, you're working
+
+```
+You: "Yes"
+
+CAMI: "Deploying state-management-specialist to my-app... Done!
+
+      Your roster is set - ready to build.
+      Try @state-management-specialist to start planning your architecture."
+```
+
+Or if you chose Option B:
 
 ```
 You: "Yes"
@@ -105,23 +141,25 @@ CAMI operates through conversational skills. You don't need to invoke them expli
 |-------|---------|-----------------|
 | **cami** | Entry point - greetings, help, routing | "Hey CAMI", "What can you do?", "Help me with agents" |
 | **manage-capabilities** | Deploy and scan agents | "Deploy frontend agent", "Check for updates", "List my roster" |
-| **manage-sources** | Add and update guilds | "Add fullstack-guild", "Update my sources", "List guilds" |
+| **manage-sources** | Add sources or create custom agents | "Add fullstack-guild", "Create a custom agent", "Update my sources", "List sources" |
 | **create-agent** | Create custom agents | "Create an agent for code review", "Build me a testing specialist" |
 | **create-project** | Set up new projects | "Set up CAMI for this project", "Recommend agents for this stack" |
 
 ---
 
-## Official Guilds
+## Official Sources
 
-These are Lando Labs' official agent collections, ready to add to your workspace:
+Pre-built agents you can use as-is or as inspiration for custom agents.
 
-| Guild | Focus | Add Command | Agents |
-|-------|-------|-------------|--------|
+**Note**: Most users create custom agents tailored to their specific projects. These official sources are helpful when you need a starting point or want to explore what's possible.
+
+| Source | Focus | Add Command | Agents |
+|--------|-------|-------------|--------|
 | **fullstack-guild** | Web development | `"Add fullstack-guild"` | frontend-methodology, backend-methodology, database-specialist, react-specialist, node-specialist |
 | **content-guild** | Writing & marketing | `"Add content-guild"` | content-strategist, technical-writer, marketing-specialist, editor |
 | **game-dev-guild** | Game development | `"Add game-dev-guild"` | phaser-specialist, game-design-methodologist, game-systems-architect |
 
-More guilds coming soon. You can also add custom sources from any Git repo.
+More sources coming soon. You can also add custom sources from any Git repo.
 
 ---
 
@@ -159,13 +197,16 @@ You make the call. CAMI executes.
 
 ### 4. Workspace Auto-Created
 
-The first time you add a guild or deploy an agent, CAMI creates:
+The first time you create an agent, add a source, or deploy an agent, CAMI creates:
 
 ```
 ~/cami-workspace/
 ├── config.json      # Auto-generated tracking
-└── sources/         # Cloned guild repos
-    └── fullstack-guild/
+└── sources/
+    ├── custom/                    # Your custom agents (priority 10)
+    │   ├── state-management-specialist.md
+    │   └── api-design-specialist.md
+    └── fullstack-guild/          # Official source (priority 100)
         ├── CLAUDE.md
         ├── frontend-methodology.md
         └── ...
@@ -177,10 +218,34 @@ You never touch this directly unless you want to. It just works.
 
 ## Common Workflows
 
-### Add Your First Guild
+### Create Your First Custom Agent
 
 ```
-You: "Add the fullstack guild"
+You: "Create an agent for API design"
+CAMI: "Let me help you create an API design specialist.
+
+      What aspects should this agent focus on?
+      - RESTful design principles
+      - Authentication/authorization patterns
+      - Versioning strategies
+      - Documentation standards
+
+      Or describe the focus yourself."
+
+You: "All of those, plus GraphQL vs REST trade-offs"
+
+CAMI: "Creating api-design-specialist in your custom source... Done!
+
+      The agent is ready to help with API architecture decisions,
+      design patterns, and best practices.
+
+      Deploy it to your current project?"
+```
+
+### Add Your First Source
+
+```
+You: "Add the fullstack source"
 CAMI: "Adding fullstack-guild from GitHub... Done!
       Found 5 agents available:
       - frontend-methodology
@@ -256,14 +321,16 @@ CAMI stores everything in `~/cami-workspace/`:
 ~/cami-workspace/
 ├── config.json              # Tracks sources and deployments
 └── sources/
-    ├── fullstack-guild/     # Official guild (git cloned)
+    ├── custom/              # Your custom agents (priority 10)
+    │   ├── api-design-specialist.md
+    │   └── state-management-specialist.md
+    ├── fullstack-guild/     # Official source (git cloned, priority 100)
     │   ├── .git/
-    │   ├── CLAUDE.md        # Guild documentation
+    │   ├── CLAUDE.md        # Source documentation
     │   ├── STRATEGIES.yaml  # Tech stack guidance
     │   └── *.md             # Agent files
-    ├── game-dev-guild/      # Another official guild
-    └── custom/              # Your custom agents
-        └── my-agent.md
+    └── game-dev-guild/      # Another official source
+        └── *.md
 ```
 
 ### Custom Workspace Location
@@ -305,11 +372,11 @@ Auto-generated, but you can edit manually if needed:
 }
 ```
 
-**Priority System**: Lower numbers win. Custom agents default to priority 10 (highest), guilds default to 100 (lowest). Customize when adding sources:
+**Priority System**: Lower numbers win. Custom agents default to priority 10 (highest), official sources default to 100 (lowest). This ensures your custom agents are the primary choice. Customize when adding sources:
 
 ```
-You: "Add my team's guild with priority 20"
-CAMI: "Adding team-guild with priority 20... Done!"
+You: "Add my team's source with priority 20"
+CAMI: "Adding team-agents with priority 20... Done!"
 ```
 
 ### Adding Custom Sources
@@ -374,7 +441,7 @@ ls -la ~/cami-workspace/
 If it doesn't exist, CAMI will create it on your first action. Try:
 
 ```
-You: "Add the fullstack guild"
+You: "Create an agent for testing"
 ```
 
 ### "An agent isn't showing up"
@@ -384,11 +451,11 @@ Check your sources:
 ```
 You: "List my sources"
 CAMI: "You have 2 sources configured:
-      - fullstack-guild (5 agents)
-      - custom (2 agents)"
+      - custom (2 agents) - priority 10
+      - fullstack-guild (5 agents) - priority 100"
 ```
 
-If the guild you need isn't listed, add it:
+If the source you need isn't listed, add it:
 
 ```
 You: "Add game-dev-guild"
@@ -419,9 +486,9 @@ CAMI is open source and welcomes contributions:
 - **Suggest features**: [GitHub Discussions](https://github.com/lando-labs/cami-plugin/discussions)
 - **Contribute code**: [Contribution Guidelines](https://github.com/lando-labs/cami-plugin/blob/main/CONTRIBUTING.md)
 
-### Creating Your Own Guilds
+### Sharing Your Custom Agents
 
-Want to create an official guild or share your custom agents? See the [Guild Creation Guide](https://github.com/lando-labs/cami-plugin/blob/main/docs/creating-guilds.md).
+Want to create an official source or share your custom agents? See the [Source Creation Guide](https://github.com/lando-labs/cami-plugin/blob/main/docs/creating-sources.md).
 
 ---
 

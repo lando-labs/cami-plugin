@@ -574,20 +574,19 @@ Skills:
 ## Handoff Guidelines
 
 ### To manage-sources
-**When**: Recommended agent not in sources
+**When**: User wants to add external sources
 
 ```
-"I'd recommend [agent-name], but it's not in your sources.
-
-Let me connect you with manage-sources to add the [guild-name]."
+"Want to add more sources? Let me connect you with manage-sources
+to add the [source-name]."
 ```
 
 ### To create-agent
-**When**: Need custom agent for project-specific specialty
+**When**: Need custom agent or agent not found in sources
 
 ```
-"Your project needs a [specialty] specialist, but I don't see one
-in any guild.
+"I don't see that specialty in your sources. Let me help you create
+a custom agent for it.
 
 Want me to help you create a custom agent for [specialty]?"
 ```

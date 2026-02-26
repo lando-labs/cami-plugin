@@ -261,24 +261,22 @@ Present recommendations in priority order:
 
 ```
 "Based on your e-commerce project with React, Node, and PostgreSQL,
-I'd recommend this roster:
+here's what I'd recommend:
 
-**Core Team** (start here):
+**From Official Sources**:
 - frontend-methodology: React architecture, component patterns, state management
 - backend-methodology: API design, Express patterns, business logic
 - database-methodology: PostgreSQL schema design, query optimization
-
-**Supporting Specialists** (add when ready):
 - security-specialist: Auth flows, payment security, data protection
 - performance-specialist: Frontend optimization, caching strategies
-- qa-methodology: Testing strategy, E2E coverage
 
 **Implementation Skills**:
 - react-tailwind: Component generation with Tailwind
 - express-api-patterns: RESTful API scaffolding
 - postgres-schema-design: Schema generation and migrations
 
-Want me to deploy the core team to start? You can always add specialists later."
+Want me to deploy these? Or would you prefer to create custom agents tailored
+to your specific e-commerce workflow?"
 ```
 
 **For SaaS (Next.js + PostgreSQL)**:
@@ -286,22 +284,20 @@ Want me to deploy the core team to start? You can always add specialists later."
 ```
 "Based on your SaaS project with Next.js and PostgreSQL:
 
-**Core Team**:
+**From Official Sources**:
 - fullstack-methodology: Next.js App Router, SSR decisions, API routes
 - database-methodology: Schema design, Prisma/ORM patterns
 - auth-specialist: Authentication strategy, user management
-
-**Supporting Specialists**:
 - performance-specialist: Next.js optimization, caching
 - security-specialist: Multi-tenancy, data isolation
-- qa-methodology: Testing strategy
 
 **Implementation Skills**:
 - nextjs-app-router: Server component scaffolding
 - postgres-schema-design: Schema generation
 - auth-patterns: Auth flow implementation
 
-Want the core team?"
+Want me to deploy these? Or would you prefer to create custom agents for
+your specific SaaS architecture?"
 ```
 
 **For CLI Tool (Go)**:
@@ -309,15 +305,16 @@ Want the core team?"
 ```
 "Based on your CLI tool project in Go:
 
-**Specialist** (no architect needed for single-purpose tools):
+**From Official Sources**:
 - backend-methodology: Go idioms, CLI architecture, error handling
 
 **Implementation Skills**:
 - go-cli-patterns: Command structure, flag parsing
 - go-testing-patterns: Table-driven tests
 
-CLI tools are focused, so you don't need a large roster. This specialist
-will guide your architecture decisions. Want to add them?"
+CLI tools are focused, so one specialist is usually enough. Want me to
+deploy this specialist, or would you prefer to create a custom one for
+your specific CLI tool needs?"
 ```
 
 **For Game (Phaser)**:
@@ -325,19 +322,17 @@ will guide your architecture decisions. Want to add them?"
 ```
 "Based on your Phaser game project:
 
-**Core Team**:
+**From Official Sources**:
 - game-core-methodology: Game loop, state management, architecture
 - game-ui-methodology: HUD design, menu systems, UX flows
-
-**Supporting Specialists**:
 - game-audio-specialist: Sound design, music integration
-- qa-methodology: Testing strategy for games
 
 **Implementation Skills**:
 - phaser-scene-patterns: Scene scaffolding
 - phaser-ui-patterns: UI component generation
 
-Want the core team?"
+Want me to deploy these? Or would you prefer to create custom agents
+tailored to your specific game genre and mechanics?"
 ```
 
 #### Team Composition Rules
@@ -367,10 +362,10 @@ Allow user to adjust recommendations.
 "I recommended [N] agents and [M] skills.
 
 You can:
-1. Deploy all of them (recommended for getting started)
-2. Just deploy the core team (add specialists later)
-3. Pick specific ones (tell me which)
-4. Adjust recommendations (what would you change?)
+1. Deploy all of them (quickest way to get started)
+2. Create custom agents tailored to your project's specific needs
+3. Pick specific ones from the recommendations (tell me which)
+4. Mix both - deploy some, create custom ones for others
 
 What sounds good?"
 ```
@@ -511,10 +506,10 @@ For each skill:
 ```
 "Deploying your roster...
 
-✓ frontend-methodology (v1.2.0) - from fullstack-guild
-✓ backend-methodology (v1.2.0) - from fullstack-guild
-✓ database-methodology (v1.0.0) - from fullstack-guild
-✓ react-tailwind skill (v1.0.0) - from fullstack-guild
+✓ frontend-methodology (v1.2.0) - from fullstack-guild source
+✓ backend-methodology (v1.2.0) - from fullstack-guild source
+✓ database-methodology (v1.0.0) - from fullstack-guild source
+✓ react-tailwind skill (v1.0.0) - from fullstack-guild source
 
 All set! Your roster is deployed."
 ```
@@ -523,19 +518,17 @@ All set! Your roster is deployed."
 
 Check sources in priority order (from config.json):
 1. User custom sources (priority 100)
-2. Official guilds (priority 50)
+2. Official sources (priority 50)
 3. External sources (priority 10)
 
 If agent not found:
 ```
-"I couldn't find [agent-name] in your sources.
+"I don't see [agent-name] in your sources.
 
-Want me to:
-1. Create a custom agent with that specialty
-2. Add a source that has it
-3. Skip it for now
+Let me help you create a custom agent for [specialty]. I'll gather your
+requirements and we can build one tailored to your needs.
 
-What would you prefer?"
+Ready to create it?"
 ```
 
 ---
@@ -788,14 +781,12 @@ Detected:
 - Backend: Node 20, Express 4
 - Database: PostgreSQL 15
 
-For an e-commerce site with this stack, I'd recommend:
+For an e-commerce site with this stack, here's what I'd recommend:
 
-**Core Team**:
+**From Official Sources**:
 - frontend-methodology: React architecture, cart/checkout flows
 - backend-methodology: API design, order processing
 - database-methodology: Product catalog, inventory schema
-
-**Supporting Specialists** (add when ready):
 - security-specialist: Payment security, auth flows
 - performance-specialist: Product page optimization
 
@@ -804,12 +795,12 @@ For an e-commerce site with this stack, I'd recommend:
 - express-api-patterns: RESTful API structure
 - postgres-schema-design: Schema modeling
 
-Want me to deploy the core team?"
+Want me to deploy these? Or would you prefer to create custom agents
+for your specific e-commerce needs?"
 
-User: "Yes, and add security specialist - we're handling payments"
+User: "Yes, deploy them all"
 
-You: "Smart move - security-specialist will guide payment integration
-and auth flows. Adding them to the core team.
+You: "Great! Deploying your e-commerce roster...
 
 Deploying your roster...
 
@@ -817,6 +808,7 @@ Deploying your roster...
 ✓ backend-methodology (v1.2.0)
 ✓ database-methodology (v1.0.0)
 ✓ security-specialist (v1.1.0)
+✓ performance-specialist (v1.1.0)
 ✓ react-tailwind skill (v1.0.0)
 ✓ express-api-patterns skill (v1.0.0)
 ✓ postgres-schema-design skill (v1.0.0)
@@ -824,7 +816,7 @@ Deploying your roster...
 All set! Your e-commerce roster is deployed.
 
 Created:
-- .claude/agents/ (4 specialists)
+- .claude/agents/ (5 specialists)
 - .claude/skills/ (3 skills)
 - .claude/CLAUDE.md (capability documentation)
 - .claude/cami-manifest.yaml (tracking)
@@ -847,18 +839,17 @@ Detected:
 - Go 1.22
 - Cobra CLI framework
 
-For a CLI tool, I'd recommend:
+For a CLI tool, here's what I'd recommend:
 
-**Specialist**:
+**From Official Sources**:
 - backend-methodology: Go idioms, CLI architecture, error handling
 
 **Implementation Skills**:
 - go-cli-patterns: Command structure, flag parsing
 
-CLI tools are single-purpose, so one strong specialist is all you need.
-They'll guide architecture decisions and best practices.
-
-Ready to deploy?"
+CLI tools are focused, so one specialist is usually enough. Want me to
+deploy this, or would you prefer to create a custom specialist for your
+specific CLI tool?"
 
 User: "Yes"
 
@@ -932,27 +923,23 @@ Detected:
 - TypeScript 5
 - Vite 5
 
-For a Phaser game, I'd recommend:
+For a Phaser game, here's what I'd recommend:
 
-**Core Team**:
+**From Official Sources**:
 - game-core-methodology: Game loop, state management, architecture
 - game-ui-methodology: HUD design, menu systems
-
-**Supporting Specialists**:
 - game-audio-specialist: Sound design, music integration
-- qa-methodology: Game testing strategy
 
 **Implementation Skills**:
 - phaser-scene-patterns: Scene scaffolding
 - phaser-ui-patterns: UI components
 
-Want the core team to start? You can add audio and QA later."
+Want me to deploy these? Or would you prefer to create custom agents
+for your specific game genre?"
 
-User: "Core team plus audio - music is important"
+User: "Deploy them all"
 
-You: "Great choice! Audio can make or break a game.
-
-Deploying your game dev roster...
+You: "Great! Deploying your game dev roster...
 
 ✓ game-core-methodology (v1.0.0)
 ✓ game-ui-methodology (v1.0.0)
@@ -980,21 +967,21 @@ who handles roster changes."
 ```
 
 ### To manage-sources
-**Condition**: Recommended agent not found in sources
+**Condition**: User wants to add external sources
 
 **Transition**:
 ```
-"I don't have [agent] in your sources yet. Let me connect you with
-manage-sources to add the [guild-name] guild."
+"Want to add more sources? Let me connect you with manage-sources
+to add the [source-name]."
 ```
 
 ### To create-agent
-**Condition**: User needs custom agent not in any source
+**Condition**: User needs custom agent or agent not found in sources
 
 **Transition**:
 ```
-"That specialty isn't in any guild yet. Want me to help you create
-a custom agent for [specialty]?
+"I don't see that specialty in your sources. Let me help you create
+a custom agent for it.
 
 [Invoke create-agent with context]"
 ```
@@ -1028,10 +1015,10 @@ If workspace exists but no sources:
 ```
 "Your workspace is set up but you don't have any sources yet.
 
-I need sources to find agents. Want me to:
-1. Add the fullstack-guild (official Lando Labs agents)
-2. Add a different source (tell me the URL)
-3. Skip agents for now (just initialize structure)
+Want me to:
+1. Create custom agents tailored to your project
+2. Add official sources (fullstack-guild, game-dev-guild, etc.)
+3. Both - create custom ones and add sources for later
 
 What sounds good?"
 ```
@@ -1042,12 +1029,11 @@ If recommended agent doesn't exist in any source:
 ```
 "I'd recommend [agent-name], but it's not in your sources.
 
-Want me to:
-1. Create a custom agent with that specialty
-2. Skip it and use what's available
-3. Add a source that has it (if known)
+Let me help you create a custom [specialty] agent tailored to your
+project. I'll gather your requirements and we can build exactly what
+you need.
 
-What would you prefer?"
+Ready to create it?"
 ```
 
 ### Project Already Initialized
