@@ -280,6 +280,360 @@ What would you like to do?
 
 ---
 
+### Workspace Errors
+
+#### Workspace Doesn't Exist
+
+**Detection:**
+```
+Workspace path doesn't exist
+OR .cami directory not found in expected location
+OR workspace config missing
+```
+
+**User Message:**
+```
+I need your CAMI workspace to do that, but it doesn't exist yet.
+
+Your workspace is where I track sources and deployments.
+
+What would you like to do?
+1. Create it now (I'll set up everything)
+2. Point me to where you want it
+3. Work without workspace features (limited functionality)
+```
+
+**Options Offered:**
+- Create workspace at default location
+- Specify custom location
+- Continue without workspace
+
+**Recovery Flow:**
+1. Check if workspace directory exists
+2. If create: use default ~/cami-workspace or user-specified
+3. Create directory structure: sources/, config.json
+4. Initialize empty config with defaults
+5. Confirm creation and next steps
+
+**Skip Behavior:**
+- Some features won't work (source management, deployment tracking)
+- Can still work with individual agent files
+- Warn about limited functionality
+- Offer to create workspace later
+
+---
+
+#### Workspace Corrupted
+
+**Detection:**
+```
+Config file exists but can't be parsed
+OR required directories missing
+OR invalid workspace structure
+```
+
+**User Message:**
+```
+Your workspace config seems corrupted - I can't read it.
+
+Found issues:
+[List specific problems]
+
+What would you like to do?
+1. Reset - Create fresh config (keeps your sources)
+2. Show me - Let's look at what's wrong
+3. Skip - Continue without workspace features
+```
+
+**Options Offered:**
+- Reset config (preserve sources)
+- Manual inspection
+- Work without workspace
+
+**Recovery Flow:**
+1. Identify specific corruption (parse error, missing dirs, etc.)
+2. If reset: backup old config, create new one
+3. If show: display config with line numbers
+4. Attempt to salvage sources list
+5. Rebuild directory structure if needed
+
+**Skip Behavior:**
+- Workspace features unavailable
+- Can't track deployments
+- Source management limited
+- Note corruption in logs
+
+---
+
+### Source Management Errors
+
+#### Source Not Found
+
+**Detection:**
+```
+User references source that's not in config
+OR source directory doesn't exist
+OR source name not recognized
+```
+
+**User Message:**
+```
+I don't see a source called '[source-name]'.
+
+Your configured sources:
+  • fullstack (12 agents)
+  • my-agents (3 agents)
+  • game-dev (8 agents)
+
+What would you like to do?
+1. Create your own agent instead
+2. Add this source (I'll help you set it up)
+3. Search these sources for similar agents
+4. List all available agents
+```
+
+**Options Offered:**
+- Create custom agent (primary path)
+- Add new source
+- Search existing sources
+- Browse available agents
+
+**Recovery Flow:**
+1. List current sources with agent counts
+2. If create: offer agent-architect
+3. If add: guide through source addition
+4. If search: fuzzy search across sources
+5. If browse: show organized agent list
+
+**Skip Behavior:**
+- Don't fail operation
+- Offer creation as alternative
+- Help user discover what they have
+- Enable working around missing source
+
+---
+
+#### Source URL Invalid
+
+**Detection:**
+```
+URL doesn't match git patterns
+OR missing protocol/host
+OR malformed URL syntax
+```
+
+**User Message:**
+```
+That doesn't look like a valid git URL.
+
+Expected formats:
+  • https://github.com/org/repo.git
+  • git@github.com:org/repo.git
+  • https://gitlab.com/org/repo.git
+
+What you provided: [user-url]
+
+What would you like to do?
+1. Try again (I'll help format it)
+2. Create your own agent instead
+3. Skip adding this source
+```
+
+**Options Offered:**
+- Retry with correct format
+- Create custom agent
+- Skip source addition
+
+**Recovery Flow:**
+1. Validate URL format
+2. Suggest common fixes (add .git, fix protocol)
+3. Check if URL is reachable
+4. If retry: validate before accepting
+5. If create: transition to agent-architect
+
+**Skip Behavior:**
+- Don't add invalid source
+- Don't persist bad config
+- Note attempted addition
+- Continue with existing sources
+
+---
+
+### Agent Errors
+
+#### Agent Not Found (Creation-First Recovery)
+
+**Detection:**
+```
+Agent lookup returns no matches
+OR agent file doesn't exist
+OR agent not in any configured source
+```
+
+**User Message:**
+```
+I couldn't find '[agent-name]' in your sources.
+
+You can:
+1. Create it - I'll help you design a custom agent
+2. Search - Maybe it has a different name?
+3. Browse - Show all available agents
+4. Add a source - It might be in a source you haven't added yet
+```
+
+**Options Offered:**
+- Create custom agent (PRIMARY - empowers user)
+- Search with fuzzy matching
+- Browse all agents
+- Add new source
+
+**Recovery Flow:**
+1. Check all sources for similar names
+2. Offer creation as first option (most empowering)
+3. If create: invoke agent-architect with user requirements
+4. If search: fuzzy match and show results
+5. If browse: organized list by category
+6. If add source: guide through source addition
+
+**Skip Behavior:**
+- Don't fail with "not found"
+- Creation is the win condition
+- Help user get what they need
+- Build their custom solution
+
+---
+
+#### Agent Parse Error
+
+**Detection:**
+```
+Frontmatter invalid
+OR required fields missing
+OR agent file corrupted
+```
+
+**User Message:**
+```
+I couldn't parse [agent-name] - found an issue in the frontmatter:
+
+[Specific parse error]
+
+What would you like to do?
+1. Skip this agent (use others)
+2. Create your own version instead
+3. Show me the issue to fix manually
+```
+
+**Options Offered:**
+- Skip malformed agent
+- Create replacement (empowering)
+- Manual fix
+
+**Recovery Flow:**
+1. Identify specific parse error
+2. Offer creation as alternative to fixing source
+3. If create: agent-architect with same purpose
+4. If manual: show error with context
+5. Continue with valid agents
+
+**Skip Behavior:**
+- Don't deploy broken agent
+- Note which agents were skipped
+- Offer creation path
+- Continue with valid agents
+
+---
+
+### Deployment Management Errors
+
+#### Deployment Conflict
+
+**Detection:**
+```
+Agent exists at target with different content
+OR versions conflict
+OR local modifications detected
+```
+
+**User Message:**
+```
+[agent-name] already exists in this project with different content.
+
+Deployed: v[deployed-version] (modified [time-ago])
+Source:   v[source-version]
+
+What would you like to do?
+1. Update - Replace with source version
+2. Keep - Keep your customized version
+3. Compare - Show me the differences first
+4. Merge - Try to combine both versions
+```
+
+**Options Offered:**
+- Update (overwrite with source)
+- Keep existing (preserve customization)
+- Diff first (informed decision)
+- Manual merge (advanced)
+
+**Recovery Flow:**
+1. Detect content differences
+2. Compare versions if available
+3. If diff: show side-by-side comparison
+4. If update: backup existing, deploy new
+5. If keep: skip deployment, log decision
+6. If merge: show conflicts, manual resolution
+
+**Skip Behavior:**
+- Preserve existing file
+- Don't overwrite without consent
+- Log decision
+- Continue with other deployments
+
+---
+
+#### Project Not Initialized
+
+**Detection:**
+```
+Target directory has no .claude/ structure
+OR not a Claude Code project
+OR missing required directories
+```
+
+**User Message:**
+```
+This project doesn't have a .claude/ directory yet.
+
+I need to create:
+  .claude/agents/     - For agent deployments
+  .claude/skills/     - For skill deployments
+
+What would you like to do?
+1. Initialize it - Create the structure
+2. Custom path - Use a different location
+3. Cancel - Not a Claude Code project
+```
+
+**Options Offered:**
+- Initialize standard structure
+- Specify alternative path
+- Cancel deployment
+
+**Recovery Flow:**
+1. Verify target is a valid directory
+2. If initialize: create .claude/ structure
+3. Create agents/ and skills/ subdirectories
+4. Optionally create .claude/config.json
+5. Proceed with deployment
+
+**Skip Behavior:**
+- Don't create partial structures
+- Don't force initialization
+- Let user decide project setup
+- Cancel cleanly if not confirmed
+
+---
+
 ### File Operations
 
 #### File Not Found
@@ -329,40 +683,43 @@ What would you like to do?
 ```
 File operation fails with EACCES
 OR write fails with permission error
+OR directory not writable
 ```
 
 **User Message:**
 ```
-I don't have permission to write to [path].
+I can't write to [path] - permission denied.
 
-This might be because:
-• The directory is system-protected
-• File permissions are too restrictive
-• Another process has the file locked
+This usually means:
+• The directory is read-only
+• You need different permissions
+• The file is owned by another user
 
 What would you like to do?
-1. I'll wait while you fix permissions
-2. Try a different location
-3. Skip this write operation
+1. Fix permissions - I'll wait (try: chmod u+w [path])
+2. Different location - Pick somewhere I can write
+3. Skip - Continue without this file
 ```
 
 **Options Offered:**
-- Wait for permission fix
+- Wait for permission fix (with suggested command)
 - Alternative location
 - Skip write
 
 **Recovery Flow:**
-1. Check if running with sufficient privileges
-2. Verify file isn't locked by another process
-3. Suggest chmod/ownership fixes
+1. Check current user and file ownership
+2. Detect if sudo/elevated permissions needed
+3. Suggest specific chmod command
 4. If alternative: validate new location is writable
 5. Test write before proceeding
+6. If skip: log skipped file
 
 **Skip Behavior:**
 - Don't write this file
 - Continue with other operations
 - Log what wasn't written
 - Warn if critical file was skipped
+- Note in summary which files need permissions
 
 ---
 
@@ -1006,6 +1363,395 @@ Would you like to:
 
 ---
 
+### Example 5: Workspace Doesn't Exist - First Time User
+
+**Scenario:** New user tries to use CAMI without workspace initialized.
+
+**Flow:**
+```
+User: "Deploy the frontend-methodology agent"
+
+Scout: "I need your CAMI workspace to do that, but it doesn't exist yet.
+
+Your workspace is where I track sources and deployments.
+
+What would you like to do?
+1. Create it now (I'll set up everything)
+2. Point me to where you want it
+3. Work without workspace features (limited functionality)"
+
+User: 1
+
+Scout: "Creating your CAMI workspace at ~/cami-workspace...
+
+[Creating directory structure... ✓]
+[Setting up config... ✓]
+[Initializing sources... ✓]
+
+Your workspace is ready!
+
+Next steps:
+• Add agent sources (repositories with agents)
+• Deploy agents to your projects
+• Track what's deployed where
+
+Want me to add a starter source to get you going?"
+
+User: "Yes, add the fullstack guild"
+
+Scout: "Adding fullstack guild...
+
+[Cloning https://github.com/lando-labs/fullstack-guild.git... ✓]
+[Loading agents... ✓]
+
+Added 12 agents from fullstack-guild:
+• frontend-methodology (React/Next.js specialist)
+• backend-architect (Node.js/Express expert)
+• database-expert (SQL/NoSQL design)
+... and 9 more
+
+Now you're ready to deploy. Try:
+'Deploy frontend-methodology to this project'"
+```
+
+**Key Points:**
+- Smooth onboarding for new users
+- Workspace creation is opportunity, not error
+- Guided setup with clear next steps
+- Immediately productive after creation
+- Suggests concrete next action
+
+---
+
+### Example 6: Agent Not Found - Creation-First Recovery
+
+**Scenario:** User asks for agent that doesn't exist in any source.
+
+**Flow:**
+```
+User: "I need a Svelte specialist agent"
+
+Scout: "I couldn't find 'svelte-specialist' in your sources.
+
+Your configured sources:
+  • fullstack-guild (12 agents) - React, Node, databases
+  • my-agents (3 agents) - Your custom agents
+
+You can:
+1. Create it - I'll help you design a custom agent
+2. Search - Maybe it has a different name?
+3. Browse - Show all available agents
+4. Add a source - It might be in a source you haven't added yet"
+
+User: 1
+
+Scout: "Great! Let's create a Svelte specialist for you.
+
+What should this agent focus on?
+
+Some ideas:
+• Svelte 5 with runes and modern features
+• SvelteKit for full-stack apps
+• Component design and best practices
+• State management patterns
+• Testing with Vitest
+
+Tell me what you're building and I'll tailor the agent to your needs."
+
+User: "SvelteKit apps with TypeScript, Tailwind, and Supabase"
+
+Scout: "Perfect! Creating a SvelteKit specialist...
+
+[Analyzing requirements... ✓]
+[Invoking agent-architect... ✓]
+[Generating agent definition... ✓]
+[Writing to ~/cami-workspace/sources/my-agents/sveltekit-specialist.md... ✓]
+
+Created sveltekit-specialist v1.0.0!
+
+This agent specializes in:
+• SvelteKit full-stack applications
+• TypeScript for type safety
+• Tailwind CSS for styling
+• Supabase for backend (auth, database, storage)
+• Modern Svelte 5 patterns
+
+Want to deploy it to your current project?"
+
+User: "Yes"
+
+Scout: "Deploying sveltekit-specialist...
+
+[Writing to .claude/agents/sveltekit-specialist.md... ✓]
+
+Deployment complete!
+
+Your project now has a SvelteKit specialist. Just say:
+'@sveltekit-specialist help me build a dashboard'
+
+and they'll guide you through your SvelteKit project."
+```
+
+**Key Points:**
+- "Not found" becomes creation opportunity
+- Creation offered FIRST, not as last resort
+- Immediate transition to agent-architect
+- Tailored to user's exact needs
+- End-to-end flow from request to deployment
+- User gets exactly what they wanted
+
+---
+
+### Example 7: Deployment Conflict - User Choice
+
+**Scenario:** User tries to deploy agent but modified version exists.
+
+**Flow:**
+```
+User: "Deploy frontend-methodology to this project"
+
+Scout: "Checking deployment target...
+
+[Reading .claude/agents... ✓]
+
+frontend-methodology already exists in this project with different content.
+
+Deployed: v2.0.0 (modified 3 days ago)
+Source:   v2.1.0 (newer)
+
+Your deployed version has local customizations.
+
+What would you like to do?
+1. Update - Replace with source version (lose customizations)
+2. Keep - Keep your customized version
+3. Compare - Show me the differences first
+4. Merge - Try to combine both versions"
+
+User: 3
+
+Scout: "Comparing versions...
+
+Differences found:
+
+1. Specialty changed:
+   - Old: React 18 with hooks
+   + New: React 18/19 with hooks and RSC
+
+2. New section added:
+   + Server Components and Server Actions patterns
+
+3. Model updated:
+   - Old: sonnet
+   + New: opus
+
+4. 47 lines added in methodology section
+
+Your version has these customizations:
+• Added team-specific conventions
+• Custom component patterns
+• Internal library references
+
+These would be lost if you update.
+
+What would you like to do?
+1. Update - Use source version (lose customizations)
+2. Keep - Keep your version
+3. Merge - I'll try to preserve your customizations
+4. Save backup - Keep both versions"
+
+User: 4
+
+Scout: "Saving backup...
+
+[Copying to .claude/agents/frontend-methodology.backup.md... ✓]
+[Deploying new version... ✓]
+
+Deployment complete!
+
+Your customized version: .claude/agents/frontend-methodology.backup.md
+New source version: .claude/agents/frontend-methodology.md
+
+You can review both and decide which parts to keep."
+```
+
+**Key Points:**
+- Respects user's local modifications
+- Clear explanation of what's different
+- Multiple resolution options
+- Detailed diff when requested
+- Non-destructive backup option
+- User maintains control
+
+---
+
+### Example 8: Project Not Initialized - Smooth Setup
+
+**Scenario:** User tries to deploy to non-Claude-Code project.
+
+**Flow:**
+```
+User: "Deploy database-expert here"
+
+Scout: "Checking deployment target...
+
+[Looking for .claude directory... ✗]
+
+This project doesn't have a .claude/ directory yet.
+
+I need to create:
+  .claude/agents/     - For agent deployments
+  .claude/skills/     - For skill deployments
+
+This will make it a Claude Code project.
+
+What would you like to do?
+1. Initialize it - Create the structure
+2. Custom path - Use a different location
+3. Cancel - Not a Claude Code project"
+
+User: 1
+
+Scout: "Initializing Claude Code structure...
+
+[Creating .claude/... ✓]
+[Creating .claude/agents/... ✓]
+[Creating .claude/skills/... ✓]
+
+Project initialized!
+
+Now deploying database-expert...
+
+[Copying from source... ✓]
+[Writing to .claude/agents/database-expert.md... ✓]
+
+Deployment complete! database-expert v1.3.0 is ready.
+
+This project is now set up for Claude Code with agents and skills.
+
+Next time you work here, you can:
+• Deploy more agents
+• Create custom skills
+• Use '@database-expert' in conversations"
+```
+
+**Key Points:**
+- Clear explanation of what's needed
+- User consent before modifying project
+- Smooth initialization flow
+- Completes original request after setup
+- Explains what was created
+- Suggests next steps
+
+---
+
+### Example 9: Permission Error - Guided Fix
+
+**Scenario:** Deployment fails due to file permissions.
+
+**Flow:**
+```
+User: "Deploy frontend-methodology"
+
+Scout: "Deploying frontend-methodology...
+
+[Reading source... ✓]
+[Validating... ✓]
+[Writing to .claude/agents... ✗]
+
+I can't write to /project/.claude/agents - permission denied.
+
+This usually means:
+• The directory is read-only
+• You need different permissions
+• The file is owned by another user
+
+What would you like to do?
+1. Fix permissions - I'll wait (try: chmod u+w .claude)
+2. Different location - Pick somewhere I can write
+3. Skip - Continue without this file"
+
+User: 1
+
+[User runs: chmod -R u+w .claude]
+
+User: "Fixed, try again"
+
+Scout: "Deploying frontend-methodology...
+
+[Writing to .claude/agents... ✓]
+
+Deployment complete! frontend-methodology v2.1.0 is ready to use.
+
+To avoid this next time, check that .claude/ has write permissions:
+  ls -la .claude
+
+Should show 'drwxr-xr-x' with your username."
+```
+
+**Key Points:**
+- Specific error explanation
+- Exact command to fix provided
+- Wait for user correction
+- Educational tip for future
+- Successful completion after fix
+
+---
+
+### Example 10: Source URL Invalid - Helpful Retry
+
+**Scenario:** User provides malformed git URL.
+
+**Flow:**
+```
+User: "Add source github.com/org/agents"
+
+Scout: "Adding source...
+
+[Validating URL... ✗]
+
+That doesn't look like a valid git URL.
+
+Expected formats:
+  • https://github.com/org/repo.git
+  • git@github.com:org/repo.git
+  • https://gitlab.com/org/repo.git
+
+What you provided: github.com/org/agents
+
+Did you mean: https://github.com/org/agents.git?
+
+What would you like to do?
+1. Use suggested URL (https://github.com/org/agents.git)
+2. Try again (I'll help format it)
+3. Create your own agents instead
+4. Cancel"
+
+User: 1
+
+Scout: "Adding source https://github.com/org/agents.git...
+
+[Cloning repository... ✓]
+[Loading agents... ✓]
+
+Added 'agents' source with 8 agents:
+  • api-designer (REST/GraphQL specialist)
+  • security-auditor (Security best practices)
+  • performance-optimizer (Speed and efficiency)
+  ... and 5 more
+
+These agents are now available to deploy!"
+```
+
+**Key Points:**
+- Intelligent URL correction suggestion
+- Show expected formats
+- Offer auto-corrected version
+- Creation still offered as alternative
+- Completes successfully with minimal friction
+- Educational about URL format
+
+---
+
 ## Graceful Degradation Patterns
 
 ### Partial Success Is Success
@@ -1030,6 +1776,76 @@ When some operations succeed and others fail:
 3. **Offer Retry for Failures Only**
    - Don't make user redo successes
    - "Want to retry just security-specialist?"
+
+### Creation-First Recovery Philosophy
+
+**Core Principle:** When an agent/source isn't found, creation should be the PRIMARY recovery path, not a fallback.
+
+**Why Creation First:**
+1. **User Empowerment** - Gives users exactly what they need
+2. **No Dependencies** - Doesn't require finding/fixing sources
+3. **Immediate Value** - User gets working agent right away
+4. **Customization** - Tailored to their exact requirements
+5. **Ownership** - User owns their custom agents
+
+**Implementation Pattern:**
+```
+Agent not found?
+  → Offer CREATION first (option 1)
+  → Then search/add source (options 2-4)
+  → Never just fail with "not found"
+```
+
+**Error Recovery Hierarchy:**
+```
+1. Create (empowering, immediate)
+2. Search (maybe named differently)
+3. Add source (might be elsewhere)
+4. Browse (discover what's available)
+```
+
+**Example Decision Tree:**
+```
+User wants: "svelte-specialist"
+
+Found in sources?
+  ┌─→ YES: Deploy it
+  └─→ NO:  Create it
+         ├─→ Guide to agent-architect
+         ├─→ Capture requirements
+         ├─→ Generate custom agent
+         ├─→ Save to workspace
+         └─→ Deploy immediately
+
+Alternative paths offered but creation is primary.
+```
+
+**Voice Pattern:**
+```
+❌ "I couldn't find that agent. Try searching or adding a source."
+✅ "I couldn't find that agent. Want me to create one for you?"
+
+❌ "Agent not found. Check your sources."
+✅ "Let's create that agent together. What should it do?"
+
+❌ "Error: No such agent exists."
+✅ "I can build that agent for you. Tell me about your needs."
+```
+
+**Recovery Messages Should:**
+- Lead with creation option
+- Make creation sound easy and desirable
+- Position it as the win condition
+- Offer alternatives but emphasize creation
+- Transition smoothly to agent-architect
+
+**Avoid:**
+- Treating creation as last resort
+- Making it sound complicated
+- Requiring source troubleshooting first
+- Leaving user feeling blocked
+
+---
 
 ### Fallback Strategies
 

@@ -1,6 +1,6 @@
 ---
 name: cami
-description: Entry point for CAMI - the agent scout. Triggers on greetings ("hey cami", "cami help"), onboarding requests ("get started", "set up cami"), capability discovery ("what can you do", "help me with agents"), and any ambiguous agent-related questions. Establishes scout persona, detects user location (workspace/project/initialization/navigation), handles conceptual questions directly, and routes deployment/source management/agent creation to specialized skills.
+description: Entry point for CAMI - the agent scout. Triggers on greetings ("hey cami", "cami help"), help requests ("help", "show commands", "what can I do"), onboarding requests ("get started", "set up cami"), capability discovery ("what can you do", "help me with agents"), and any ambiguous agent-related questions. Establishes scout persona, detects user location (workspace/project/initialization/navigation), handles conceptual questions and help display directly, and routes deployment/source management/agent creation to specialized skills.
 ---
 
 # CAMI Entry Skill
@@ -80,6 +80,41 @@ Handle these requests yourself without invoking other skills:
 - "Is this project ready?"
 
 **Approach**: Answer directly, offer next steps if appropriate.
+
+### Help System
+- "cami help"
+- "help"
+- "what can I do"
+- "what can you do"
+- "show commands"
+
+**Approach**: Display structured help with command categories and examples. Keep scout voice.
+
+**Help Output Format**:
+```
+I'm your agent scout - I help you build championship teams of AI specialists for your projects.
+
+DEPLOY & MANAGE
+  'deploy [agent]'      - Add an agent to this project
+  'list agents'         - Show available and deployed
+  'scan for updates'    - Check for newer versions
+  'remove [agent]'      - Remove an agent from this project
+
+SOURCES (Optional)
+  'add source [name]'   - Add a reference source
+  'list sources'        - Show configured sources
+  'update sources'      - Pull latest from git sources
+
+CREATE
+  'create an agent'     - Build a custom agent
+  'set up this project' - Initialize CAMI here
+
+DISCOVERY
+  'scout this project'  - Analyze and recommend agents
+  'find my projects'    - Discover Claude Code projects
+
+Say any command or describe what you need in your own words.
+```
 
 ---
 
