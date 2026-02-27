@@ -1,8 +1,43 @@
 # CAMI Configuration Schema
 
 **Version**: 1.0.0
-**Location**: `~/cami-workspace/config.json`
+**Format**: YAML
+**Location**: `$CAMI_WORKSPACE_PATH/config.yaml` (default: `~/cami-workspace/config.yaml`)
 **Created**: Auto-generated on first meaningful action
+
+---
+
+## CRITICAL: Format Alignment
+
+**This plugin uses the EXISTING CAMI workspace format.** Users already have `config.yaml` files from the CAMI MCP server. This plugin MUST be compatible with that format.
+
+| Aspect | Correct | Wrong |
+|--------|---------|-------|
+| File format | YAML | ~~JSON~~ |
+| File name | `config.yaml` | ~~config.json~~ |
+| Sources field | `agent_sources` | ~~sources~~ |
+| Locations field | `deploy_locations` | ~~deployments~~ |
+
+---
+
+## Workspace Path Resolution
+
+**ALWAYS resolve the workspace path before any operation.**
+
+```bash
+# Check for custom workspace path
+WORKSPACE_PATH="${CAMI_WORKSPACE_PATH:-$HOME/cami-workspace}"
+
+# Use this for all paths:
+# - Config: $WORKSPACE_PATH/config.yaml
+# - Sources: $WORKSPACE_PATH/sources/
+# - Deployments: $WORKSPACE_PATH/deployments.yaml
+```
+
+**In skill instructions**, check the environment variable:
+1. Run: `echo $CAMI_WORKSPACE_PATH`
+2. If set and non-empty: use that path
+3. If empty/unset: use default `~/cami-workspace`
 
 ---
 
@@ -29,7 +64,7 @@ Instead, CAMI creates its configuration **automatically** when users perform the
 The user's first experience should be:
 ```
 User: "Create a frontend specialist for React"
-Claude: *Creates agent, auto-creates ~/cami-workspace/config.json behind the scenes*
+Claude: *Creates agent, auto-creates config.yaml behind the scenes*
 Claude: "Created frontend-specialist in your custom source"
 ```
 
@@ -47,77 +82,52 @@ Config file is created when the user:
 
 1. **Creates First Custom Agent**:
    - Trigger: Agent creation via agent-architect skill
-   - Creates: `~/cami-workspace/config.json` + `~/cami-workspace/sources/custom/` directory
+   - Creates: `config.yaml` + `sources/my-agents/` directory
    - Priority: 10 (highest priority - custom agents are the intended primary)
 
 2. **Deploys First Agent**:
-   - Trigger: `deploy_agents` or "deploy frontend agent to my project"
-   - Creates: Config if missing, adds deployment entry
-   - Updates: Deployment tracking for the target project
+   - Trigger: "deploy frontend agent to my project"
+   - Creates: Config if missing, updates deployment tracking
+   - Updates: `deployments.yaml` for the target project
 
 3. **Adds First Source**:
-   - Trigger: `add_source` or "add the X source"
-   - Creates: Config if missing, adds source to `~/cami-workspace/sources/` directory
-   - Initial state: One source entry, no deployments
-
-**Implementation Detail**:
-```javascript
-// Pseudo-code for auto-creation logic
-function ensureConfig() {
-  const configPath = expandPath('~/cami-workspace/config.json');
-  if (!exists(configPath)) {
-    createDirectory('~/cami-workspace/sources/');
-    writeFile(configPath, {
-      version: "1.0.0",
-      sources: [],
-      deployments: []
-    });
-  }
-}
-
-// Called before any operation that needs config
-function addSource(name, gitUrl) {
-  ensureConfig(); // Silent, automatic
-  // ... rest of add logic
-}
-```
+   - Trigger: "add the fullstack-guild"
+   - Creates: Config if missing, clones source to `sources/` directory
+   - Initial state: One source entry
 
 ---
 
-## config.json Schema
+## config.yaml Schema (Workspace Configuration)
 
 ### Complete Structure
 
-```json
-{
-  "version": "1.0.0",
-  "sources": [
-    {
-      "name": "fullstack-source",
-      "path": "~/cami-workspace/sources/fullstack-source",
-      "git": "https://github.com/lando-labs/fullstack-source.git",
-      "priority": 100,
-      "added": "2026-02-25T10:30:00Z"
-    },
-    {
-      "name": "custom",
-      "path": "~/cami-workspace/sources/custom",
-      "git": null,
-      "priority": 10,
-      "added": "2026-02-25T11:00:00Z"
-    }
-  ],
-  "deployments": [
-    {
-      "project": "~/projects/my-app",
-      "agents": [
-        "fullstack-source:frontend-methodology",
-        "custom:my-team-agent"
-      ],
-      "lastUpdated": "2026-02-25T10:30:00Z"
-    }
-  ]
-}
+This is the **existing format** that CAMI MCP server users already have:
+
+```yaml
+# ~/cami-workspace/config.yaml
+version: "1"
+install_timestamp: 2025-11-20T17:37:36.626242873-06:00
+setup_complete: true
+
+agent_sources:
+  - name: my-agents
+    type: local
+    path: /Users/lando/cami-workspace/sources/my-agents
+    priority: 10
+    git:
+      enabled: false
+
+  - name: fullstack-guild
+    type: local
+    path: /Users/lando/cami-workspace/sources/fullstack-guild
+    priority: 40
+    git:
+      enabled: true
+      url: https://github.com/lando-labs/fullstack-guild.git
+
+deploy_locations:
+  - name: my-app
+    path: /Users/lando/projects/my-app
 ```
 
 ### Field Definitions
@@ -126,36 +136,34 @@ function addSource(name, gitUrl) {
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `version` | string | Yes | Schema version (semver), currently "1.0.0" |
-| `sources` | array | Yes | Array of agent source definitions |
-| `deployments` | array | Yes | Array of deployment tracking entries |
+| `version` | string | Yes | Schema version, currently "1" |
+| `install_timestamp` | string | No | ISO 8601 timestamp of workspace creation |
+| `setup_complete` | boolean | No | Whether initial setup is done |
+| `agent_sources` | array | Yes | Array of agent source definitions |
+| `deploy_locations` | array | Yes | Array of tracked project locations |
 
-#### Source Object
+#### Source Object (`agent_sources[]`)
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `name` | string | Yes | Source identifier (kebab-case, unique) |
-| `path` | string | Yes | Absolute or tilde-expanded path to source directory |
-| `git` | string \| null | Yes | Git clone URL, or `null` for local-only sources |
+| `type` | string | Yes | Source type: `local`, `git`, `remote` |
+| `path` | string | Yes | Absolute path to source directory |
 | `priority` | number | Yes | Priority for conflict resolution (lower wins) |
-| `added` | string | Yes | ISO 8601 timestamp when source was added |
+| `git.enabled` | boolean | Yes | Whether git sync is enabled |
+| `git.url` | string | No | Git clone URL (required if git.enabled) |
 
 **Source Priority Defaults**:
-- Custom agents: **10** (highest priority - this is the intended primary path)
-- Team/organization sources: **50** (medium priority)
-- Public sources: **100** (lowest priority, default)
+- Custom agents (my-agents): **10** (highest priority - user's own agents win)
+- Team/organization sources: **40-50** (medium priority)
+- Public/official sources: **100** (lowest priority, default)
 
-#### Deployment Object
+#### Deploy Location Object (`deploy_locations[]`)
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `project` | string | Yes | Absolute or tilde-expanded path to project directory |
-| `agents` | array | Yes | Array of deployed agent identifiers (`source:agent-name`) |
-| `lastUpdated` | string | Yes | ISO 8601 timestamp of last deployment change |
-
-**Agent Identifier Format**: `source-name:agent-name`
-- Example: `fullstack-source:frontend-methodology`
-- Example: `custom:my-agent`
+| `name` | string | Yes | Project display name |
+| `path` | string | Yes | Absolute path to project directory |
 
 ---
 
@@ -167,48 +175,41 @@ When the **same agent name** exists in multiple sources, the source with the **l
 
 **Priority Tiers**:
 ```
-10  = Custom agents (user-created - the intended primary path)
-50  = Team/organization sources (medium priority)
-100 = Public sources (lowest priority, default)
+10  = Custom agents (my-agents - user's own work wins)
+40  = Team/organization sources (medium priority)
+100 = Public/official sources (lowest priority, default)
 ```
 
 ### Example Scenario
 
 **Sources**:
-```json
-{
-  "sources": [
-    {
-      "name": "custom",
-      "priority": 10,
-      "path": "~/cami-workspace/sources/custom"
-    },
-    {
-      "name": "my-team",
-      "priority": 50,
-      "path": "~/cami-workspace/sources/my-team"
-    },
-    {
-      "name": "fullstack-source",
-      "priority": 100,
-      "path": "~/cami-workspace/sources/fullstack-source"
-    }
-  ]
-}
+```yaml
+agent_sources:
+  - name: my-agents
+    priority: 10
+    path: ~/cami-workspace/sources/my-agents
+
+  - name: team-guild
+    priority: 40
+    path: ~/cami-workspace/sources/team-guild
+
+  - name: fullstack-guild
+    priority: 100
+    path: ~/cami-workspace/sources/fullstack-guild
 ```
 
 **Agent Resolution**:
 
-If `frontend.md` exists in all three sources:
-1. CAMI uses `custom/frontend.md` (priority 10 - user's own agents win)
-2. If custom doesn't have it, uses `my-team/frontend.md` (priority 50)
-3. If neither have it, uses `fullstack-source/frontend.md` (priority 100)
+If `frontend-methodology.md` exists in all three sources:
+1. CAMI uses `my-agents/frontend-methodology.md` (priority 10 - user's own agents win)
+2. If my-agents doesn't have it, uses `team-guild/frontend-methodology.md` (priority 40)
+3. If neither have it, uses `fullstack-guild/frontend-methodology.md` (priority 100)
 
 **User Control**:
 
 Users can override priority when adding sources:
 ```
-User: "Add the fullstack source with priority 20"
+User: "Add the fullstack-guild with priority 20"
 Claude: *Adds source with priority 20 instead of default 100*
 ```
 
@@ -219,27 +220,30 @@ Claude: *Adds source with priority 20 instead of default 100*
 CAMI auto-creates this structure when needed:
 
 ```
-~/cami-workspace/
-├── config.json              ← Auto-created on first create/deploy/source-add
-└── sources/                 ← Auto-created with config.json
-    ├── custom/              ← Auto-created when first custom agent created (primary path)
-    │   ├── my-agent.md      ← User-created agents
+~/cami-workspace/                    # Or $CAMI_WORKSPACE_PATH if set
+├── config.yaml                      # Workspace configuration
+├── deployments.yaml                 # Detailed deployment tracking (optional)
+└── sources/                         # Agent source directories
+    ├── my-agents/                   # User's custom agents (priority 10)
+    │   ├── CLAUDE.md                # Source description
+    │   ├── my-agent.md              # User-created agents
     │   └── ...
-    ├── fullstack-source/    ← Git cloned when source added
+    ├── fullstack-guild/             # Git cloned source
     │   ├── .git/
     │   ├── CLAUDE.md
-    │   ├── STRATEGIES.yaml
-    │   ├── frontend.md
-    │   ├── backend.md
-    │   └── ...
-    └── game-dev-source/     ← Git cloned when source added
+    │   ├── agents/
+    │   │   ├── frontend-methodology.md
+    │   │   └── backend-methodology.md
+    │   └── skills/
+    │       └── react-tailwind/
+    └── game-dev-guild/              # Another git source
         └── ...
 ```
 
 **Directory Creation Rules**:
-- `~/cami-workspace/` created when config first needed
-- `sources/` created alongside config.json
-- `sources/custom/` created when first custom agent created (most common first action)
+- Workspace directory created when config first needed
+- `sources/` created alongside config.yaml
+- `sources/my-agents/` created when first custom agent created
 - `sources/[source-name]/` created when source added (git clone)
 
 **No Manual Setup Required**: Users never create directories manually.
@@ -259,9 +263,7 @@ CAMI auto-creates this structure when needed:
 # Use a different workspace location
 export CAMI_WORKSPACE_PATH=~/my-custom-workspace
 
-# CAMI will use this location instead
-cami create agent frontend-specialist
-# Creates: ~/my-custom-workspace/config.json
+# CAMI will use this location instead of ~/cami-workspace/
 ```
 
 **Use Cases**:
@@ -269,135 +271,82 @@ cami create agent frontend-specialist
 - Shared team workspaces (network drives)
 - Testing/development (temporary workspaces)
 
-**Config Path Resolution**:
-```javascript
-const workspacePath = process.env.CAMI_WORKSPACE_PATH || '~/cami-workspace';
-const configPath = path.join(workspacePath, 'config.json');
+**Resolution Logic** (for skill implementations):
+```bash
+# Always check env var first
+WORKSPACE="${CAMI_WORKSPACE_PATH:-$HOME/cami-workspace}"
+
+# Then use for all paths
+CONFIG="$WORKSPACE/config.yaml"
+SOURCES="$WORKSPACE/sources/"
 ```
+
+**IMPORTANT**: Every skill that references workspace paths MUST check for this environment variable. See "Workspace Path Resolution" section at the top of this document.
 
 ---
 
 ## Key Design Decisions
 
-### 1. JSON, Not YAML
+### 1. YAML Format (Compatibility with Existing CAMI)
 
-**Decision**: Use JSON for config file
+**Decision**: Use YAML for config file to match existing CAMI MCP server format
 
 **Rationale**:
-- **Claude Code Convention**: Claude Code uses JSON for plugin.json, marketplace.json
-- **Consistency**: Matches ecosystem standards
-- **Tooling**: Better IDE support, validation, parsing
-- **Simplicity**: Less ambiguity than YAML (no indentation issues)
+- **Existing Users**: CAMI MCP server users already have `config.yaml` files
+- **No Migration Required**: Plugin works with existing workspaces immediately
+- **Human-Readable**: YAML is easier to read and edit if needed
+- **Comments**: YAML supports comments for documentation
 
-**Trade-off**: Less human-friendly than YAML (no comments, strict syntax)
-
-**Mitigation**: Config is mostly auto-generated, users rarely edit manually
+**Note**: While Claude Code plugins use JSON for `plugin.json`, user-facing config files use YAML for compatibility with the existing CAMI ecosystem.
 
 ### 2. Versioned Schema
 
-**Decision**: Include `"version": "1.0.0"` in config
+**Decision**: Include `version: "1"` in config
 
 **Rationale**:
 - **Future Migrations**: Can detect old config format and auto-migrate
-- **Breaking Changes**: Can introduce v2.0.0 with different structure
+- **Breaking Changes**: Can introduce v2 with different structure
 - **Tooling**: Can validate against specific schema version
 
-**Example Migration**:
-```javascript
-function loadConfig(configPath) {
-  const config = JSON.parse(readFile(configPath));
+### 3. Separate Config and Deployments
 
-  if (config.version === "1.0.0") {
-    return config; // Current version
-  } else if (config.version === "0.9.0") {
-    return migrateFrom090(config); // Auto-upgrade
-  } else {
-    throw new Error(`Unknown config version: ${config.version}`);
-  }
-}
-```
-
-### 3. Flat Structure
-
-**Decision**: Keep config flat (sources + deployments arrays)
+**Decision**: Keep `config.yaml` (sources) separate from `deployments.yaml` (what's deployed where)
 
 **Rationale**:
-- **Easy Editing**: Users can manually edit if needed
-- **Simple Queries**: No deep nesting to traverse
-- **Clear Ownership**: Each array has single responsibility
-
-**Alternative Considered**: Nested structure (sources contain deployments)
-```json
-{
-  "sources": [
-    {
-      "name": "fullstack-source",
-      "deployments": [...]  // ❌ Rejected - couples sources to deployments
-    }
-  ]
-}
-```
-
-**Why Rejected**: A deployment uses agents from **multiple sources**. Nesting couples them incorrectly.
+- **Single Responsibility**: Each file has one purpose
+- **Scalability**: Deployments can grow without cluttering config
+- **Optional**: `deployments.yaml` is optional for simple setups
 
 ### 4. ISO 8601 Timestamps
 
-**Decision**: Use `"2026-02-25T10:30:00Z"` format for all timestamps
+**Decision**: Use `2026-02-25T10:30:00Z` format for all timestamps
 
 **Rationale**:
 - **Unambiguous**: No timezone confusion
 - **Sortable**: Lexicographic sort works correctly
-- **Standard**: Widely supported, JSON-friendly
+- **Standard**: Widely supported
 
 **Fields Using Timestamps**:
-- `source.added` - When source was added
-- `deployment.lastUpdated` - When deployment last changed
+- `install_timestamp` - When workspace was created
+- `deployed_at` - When capability was deployed to a project
 
-### 5. Agent Identifier Format
+### 5. Absolute Paths in Config
 
-**Decision**: Use `source:agent-name` format
-
-**Rationale**:
-- **Explicit Source**: Clear which source provides the agent
-- **Conflict Resolution**: Priority system can resolve duplicates
-- **Namespacing**: Prevents collisions between sources
-
-**Examples**:
-- `fullstack-source:frontend-methodology`
-- `game-dev-source:phaser-specialist`
-- `custom:my-custom-agent`
-
-**Deployment Tracking**:
-```json
-{
-  "deployments": [
-    {
-      "project": "~/projects/my-app",
-      "agents": [
-        "fullstack-source:frontend-methodology",
-        "fullstack-source:backend-methodology",
-        "custom:my-team-conventions"
-      ]
-    }
-  ]
-}
-```
-
-### 6. Tilde Expansion
-
-**Decision**: Support `~` in paths (`~/cami-workspace`, `~/projects/my-app`)
+**Decision**: Store absolute paths in config (e.g., `/Users/lando/cami-workspace/sources/...`)
 
 **Rationale**:
-- **User-Friendly**: Shorter, more readable paths
-- **Portability**: Works across different usernames/systems
-- **Convention**: Standard in Unix/Linux tooling
+- **Unambiguous**: No resolution needed
+- **Portability**: Tilde expansion happens once at write time
+- **Consistency**: Same path format everywhere
 
-**Implementation**: Must expand tilde before filesystem operations
-```javascript
-function expandPath(p) {
-  return p.replace(/^~/, os.homedir());
-}
-```
+### 6. Priority-Based Resolution
+
+**Decision**: Lower priority number wins when same agent exists in multiple sources
+
+**Rationale**:
+- **User Control**: User's custom agents (priority 10) always win
+- **Explicit**: Priority is visible in config
+- **Flexible**: Can be overridden per-source
 
 ---
 
@@ -451,202 +400,190 @@ Available sources: fullstack-source, custom
 
 ---
 
-## Migration & Upgrades
+## Project Manifest Schema (cami-manifest.yaml)
 
-### From MCP Server config.yaml to Plugin config.json
+Each project that has CAMI capabilities deployed has a manifest file at `.claude/cami-manifest.yaml`.
 
-The original CAMI MCP server used `config.yaml`. This plugin uses `config.json`.
-
-**Migration Strategy**:
-
-1. **Detection**: Check for `~/cami-workspace/config.yaml`
-2. **Parse**: Read YAML config
-3. **Transform**: Convert to JSON schema
-4. **Write**: Write `config.json`
-5. **Backup**: Rename `config.yaml` to `config.yaml.backup`
-
-**Field Mapping**:
-
-| YAML (MCP) | JSON (Plugin) | Notes |
-|------------|---------------|-------|
-| `workspace_path` | _implicit_ | Always `~/cami-workspace` |
-| `agent_sources` | `sources` | Array of source objects |
-| `agent_sources[].path` | `sources[].path` | Direct mapping |
-| `agent_sources[].git_url` | `sources[].git` | Renamed field |
-| `deploy_locations` | _omitted_ | Location management deferred |
-
-**Example Migration**:
+### Standardized Format
 
 ```yaml
-# config.yaml (old)
-workspace_path: ~/cami-workspace
-agent_sources:
-  - path: ~/cami-workspace/sources/fullstack-source
-    git_url: https://github.com/lando-labs/fullstack-source.git
+# .claude/cami-manifest.yaml
+version: 1
+project:
+  name: my-app
+  path: /Users/lando/projects/my-app
+  initialized_at: 2026-02-25T10:30:00Z
+
+capabilities:
+  agents:
+    - name: frontend-methodology
+      version: 1.2.0
+      source: fullstack-guild
+      deployed_at: 2026-02-25T10:30:00Z
+      content_hash: sha256:abc123def456...
+      specialty: React architecture decisions
+
+    - name: backend-methodology
+      version: 2.0.0
+      source: fullstack-guild
+      deployed_at: 2026-02-25T10:32:00Z
+      content_hash: sha256:def789ghi012...
+      specialty: API design patterns
+
+  skills:
+    - name: react-tailwind
+      version: 2.1.0
+      source: fullstack-guild
+      deployed_at: 2026-02-25T10:35:00Z
+      content_hash: sha256:xyz789abc123...
+      purpose: Component generation with Tailwind
 ```
 
-```json
-// config.json (new)
-{
-  "version": "1.0.0",
-  "sources": [
-    {
-      "name": "fullstack-source",
-      "path": "~/cami-workspace/sources/fullstack-source",
-      "git": "https://github.com/lando-labs/fullstack-source.git",
-      "priority": 100,
-      "added": "2026-02-25T10:30:00Z"
-    }
-  ],
-  "deployments": []
-}
+### Field Definitions
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `version` | number | Yes | Manifest schema version (currently 1) |
+| `project.name` | string | Yes | Project display name |
+| `project.path` | string | Yes | Absolute path to project |
+| `project.initialized_at` | string | Yes | ISO 8601 timestamp |
+| `capabilities.agents` | array | Yes | Array of deployed agents |
+| `capabilities.skills` | array | Yes | Array of deployed skills |
+
+### Capability Entry Fields
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `name` | string | Yes | Capability name (matches filename) |
+| `version` | string | Yes | Semantic version from source |
+| `source` | string | Yes | Source name it came from |
+| `deployed_at` | string | Yes | ISO 8601 timestamp of deployment |
+| `content_hash` | string | Yes | SHA-256 of deployed file (for update detection) |
+| `specialty` | string | No | Agent specialty description |
+| `purpose` | string | No | Skill purpose description |
+
+### Migration: Old Manifest Formats
+
+Skills may encounter old manifest formats. Here's how to handle them:
+
+**Old Format A** (`deployed` root key):
+```yaml
+deployed:
+  agents:
+    - name: frontend-methodology
+      deployed_at: 2026-02-25T10:30:00Z
 ```
 
-### Future Schema Versions
+**Old Format B** (`capabilities` without hash):
+```yaml
+capabilities:
+  agents:
+    - name: frontend-methodology
+      added_at: 2026-02-25T10:30:00Z
+```
+
+**Migration Logic**:
+1. Check for `deployed` root key → rename to `capabilities`
+2. Check for `added_at` field → rename to `deployed_at`
+3. Check for missing `content_hash` → compute and add
+4. Check for missing `version` field → read from source, add `1.0.0` if unknown
+5. Write updated manifest
+
+**When to Migrate**: On any manifest read operation, detect old formats and auto-migrate. No user prompt needed.
+
+---
+
+## Future Schema Versions
 
 When introducing breaking changes, increment version:
 
-**v1.0.0 → v2.0.0**:
-- Detect old version in config
-- Auto-migrate to new structure
-- Preserve user data
-- Backup old config
-
-**Example**:
-```javascript
-if (config.version === "1.0.0") {
-  // Backup old config
-  fs.copyFileSync('config.json', 'config.json.v1.backup');
-
-  // Migrate to v2
-  const v2Config = {
-    version: "2.0.0",
-    // New structure
-  };
-
-  fs.writeFileSync('config.json', JSON.stringify(v2Config, null, 2));
-}
+**Version Detection**:
+```yaml
+# Check version field
+version: 1  # Current version
 ```
+
+**Migration Path**:
+1. Read config/manifest
+2. Check `version` field
+3. If old version, auto-migrate
+4. Write updated file
 
 ---
 
 ## Implementation Checklist
 
-### Phase 1: Auto-Creation (MVP)
+### Workspace Config (config.yaml)
 
-- [ ] Detect if config exists before any operation
-- [ ] Auto-create `~/cami-workspace/config.json` if missing
-- [ ] Auto-create `~/cami-workspace/sources/` directory
-- [ ] Initialize with empty sources and deployments arrays
-- [ ] Silent operation (no user prompt, no confirmation)
+- [x] Use YAML format (not JSON)
+- [x] Use `agent_sources` field name (not `sources`)
+- [x] Use `deploy_locations` field name (not `deployments`)
+- [x] Check `CAMI_WORKSPACE_PATH` env var before using default
+- [ ] Auto-create workspace directory on first operation
+- [ ] Auto-create config.yaml with correct schema
+- [ ] Set priority based on source type (custom=10, team=40, official=100)
 
-### Phase 2: Source Management
+### Project Manifest (cami-manifest.yaml)
 
-- [ ] Add source to config when source added
-- [ ] Set priority based on source type (custom=10, team=50, source=100)
-- [ ] Record ISO 8601 timestamp in `added` field
-- [ ] Support custom priority via user override
+- [x] Use `capabilities` as root key (not `deployed`)
+- [x] Use `deployed_at` for timestamp (not `added_at`)
+- [x] Include `content_hash` for update detection
+- [x] Include `specialty`/`purpose` for documentation
+- [ ] Auto-migrate old manifest formats on read
+- [ ] Compute content_hash on deployment
 
-### Phase 3: Deployment Tracking
+### Environment Variables
 
-- [ ] Record deployment when agents deployed
-- [ ] Track project path and agent list
-- [ ] Update `lastUpdated` timestamp on changes
-- [ ] Support multiple agents per project
-
-### Phase 4: Priority Resolution
-
-- [ ] Implement priority-based agent resolution
-- [ ] Handle agent name conflicts (lowest priority wins)
-- [ ] Warn user when priority override happens
-- [ ] Allow priority customization
-
-### Phase 5: Environment Variables
-
-- [ ] Support `CAMI_WORKSPACE_PATH` override
-- [ ] Expand tilde in all path operations
-- [ ] Validate custom workspace paths
-
-### Phase 6: Validation
-
-- [ ] Validate JSON schema on load
-- [ ] Check required fields
-- [ ] Validate source uniqueness
-- [ ] Validate deployment references
-- [ ] Provide helpful error messages
-
-### Phase 7: Migration
-
-- [ ] Detect old `config.yaml` format
-- [ ] Auto-migrate to `config.json`
-- [ ] Backup old config
-- [ ] Preserve all user data
+- [x] Document `CAMI_WORKSPACE_PATH` support
+- [ ] All skills check env var before using default path
+- [ ] Workspace creation respects env var
 
 ---
 
 ## Testing Scenarios
 
-### Auto-Creation Tests
+### Workspace Path Resolution Tests
 
-1. **Fresh Install**:
-   - No `~/cami-workspace/` exists
-   - User creates first custom agent
-   - Config auto-created with custom source
-   - No errors, no prompts
+1. **Default Path**:
+   - `CAMI_WORKSPACE_PATH` not set
+   - Uses `~/cami-workspace`
 
-2. **Config Exists, Directory Missing**:
-   - `~/cami-workspace/config.json` exists but corrupted
-   - `sources/` directory deleted
-   - CAMI recreates missing directories
-   - Preserves valid config data
+2. **Custom Path**:
+   - `CAMI_WORKSPACE_PATH=~/my-workspace`
+   - Uses `~/my-workspace/config.yaml`
 
-3. **Custom Workspace Path**:
-   - `CAMI_WORKSPACE_PATH=~/custom-workspace`
-   - User creates first agent
-   - Config created at `~/custom-workspace/config.json`
+3. **Empty Env Var**:
+   - `CAMI_WORKSPACE_PATH=""` (empty string)
+   - Falls back to `~/cami-workspace`
 
 ### Priority Resolution Tests
 
-1. **Single Source (Custom)**:
-   - Only `custom` source exists (user created their own agent)
-   - `frontend` agent requested
-   - Uses `custom:frontend`
+1. **User Agents Win**:
+   - `my-agents` (priority 10) has `frontend-methodology`
+   - `fullstack-guild` (priority 100) has `frontend-methodology`
+   - CAMI uses `my-agents` version (lower priority wins)
 
-2. **Multiple Sources, No Conflict**:
-   - `fullstack-source` has `frontend`
-   - `game-dev-source` has `phaser-specialist`
-   - Both available, no conflict
+2. **Source Not Found**:
+   - User requests agent not in any source
+   - Offer to create custom agent
 
-3. **Multiple Sources, With Conflict**:
-   - `fullstack-source` (priority 100) has `frontend`
-   - `custom` (priority 10) has `frontend`
-   - CAMI uses `custom:frontend` (lower priority wins)
+### Manifest Migration Tests
 
-4. **Custom Priority Override**:
-   - User sets `fullstack-source` to priority 20
-   - User has `custom` at priority 10
-   - Custom still wins (10 < 20)
+1. **Old `deployed` Format**:
+   - Manifest has `deployed:` root key
+   - Auto-migrates to `capabilities:` on read
 
-### Deployment Tracking Tests
+2. **Old `added_at` Field**:
+   - Entry has `added_at` instead of `deployed_at`
+   - Auto-migrates field name
 
-1. **First Deployment**:
-   - User deploys `frontend` to `~/projects/my-app`
-   - Config records deployment
-   - `lastUpdated` timestamp set
-
-2. **Multiple Deployments**:
-   - Deploy to `~/projects/app1`
-   - Deploy to `~/projects/app2`
-   - Both tracked separately
-
-3. **Update Existing Deployment**:
-   - Deploy `backend` to existing project
-   - `agents` array updated
-   - `lastUpdated` timestamp refreshed
+3. **Missing `content_hash`**:
+   - Old manifest lacks hash
+   - Computes and adds on next operation
 
 ### Validation Tests
 
-1. **Corrupted JSON**:
+1. **Corrupted YAML**:
    - Config has syntax error
    - CAMI shows helpful error
    - Suggests manual fix or re-init
@@ -674,93 +611,118 @@ if (config.version === "1.0.0") {
 
 ## Appendix: Example Configs
 
-### Minimal Config (Fresh Install)
+### Minimal Workspace Config (Fresh Install)
 
-```json
-{
-  "version": "1.0.0",
-  "sources": [],
-  "deployments": []
-}
+```yaml
+# ~/cami-workspace/config.yaml
+version: "1"
+setup_complete: true
+agent_sources: []
+deploy_locations: []
 ```
 
-### Single Guild Config
+### Single Source Config
 
-```json
-{
-  "version": "1.0.0",
-  "sources": [
-    {
-      "name": "fullstack-source",
-      "path": "~/cami-workspace/sources/fullstack-source",
-      "git": "https://github.com/lando-labs/fullstack-source.git",
-      "priority": 100,
-      "added": "2026-02-25T10:30:00Z"
-    }
-  ],
-  "deployments": [
-    {
-      "project": "~/projects/my-web-app",
-      "agents": [
-        "fullstack-source:frontend-methodology",
-        "fullstack-source:backend-methodology"
-      ],
-      "lastUpdated": "2026-02-25T10:45:00Z"
-    }
-  ]
-}
+```yaml
+# ~/cami-workspace/config.yaml
+version: "1"
+install_timestamp: 2026-02-25T10:30:00Z
+setup_complete: true
+
+agent_sources:
+  - name: fullstack-guild
+    type: local
+    path: /Users/lando/cami-workspace/sources/fullstack-guild
+    priority: 100
+    git:
+      enabled: true
+      url: https://github.com/lando-labs/fullstack-guild.git
+
+deploy_locations:
+  - name: my-web-app
+    path: /Users/lando/projects/my-web-app
 ```
 
-### Multi-Guild + Custom Config
+### Multi-Source + Custom Agents Config
 
-```json
-{
-  "version": "1.0.0",
-  "sources": [
-    {
-      "name": "fullstack-source",
-      "path": "~/cami-workspace/sources/fullstack-source",
-      "git": "https://github.com/lando-labs/fullstack-source.git",
-      "priority": 100,
-      "added": "2026-02-25T10:30:00Z"
-    },
-    {
-      "name": "game-dev-source",
-      "path": "~/cami-workspace/sources/game-dev-source",
-      "git": "https://github.com/lando-labs/game-dev-source.git",
-      "priority": 100,
-      "added": "2026-02-25T11:00:00Z"
-    },
-    {
-      "name": "custom",
-      "path": "~/cami-workspace/sources/custom",
-      "git": null,
-      "priority": 10,
-      "added": "2026-02-25T12:00:00Z"
-    }
-  ],
-  "deployments": [
-    {
-      "project": "~/projects/web-app",
-      "agents": [
-        "fullstack-source:frontend-methodology",
-        "custom:team-conventions"
-      ],
-      "lastUpdated": "2026-02-25T12:30:00Z"
-    },
-    {
-      "project": "~/projects/game",
-      "agents": [
-        "game-dev-source:phaser-specialist"
-      ],
-      "lastUpdated": "2026-02-25T13:00:00Z"
-    }
-  ]
-}
+```yaml
+# ~/cami-workspace/config.yaml
+version: "1"
+install_timestamp: 2026-02-25T10:30:00Z
+setup_complete: true
+
+agent_sources:
+  - name: my-agents
+    type: local
+    path: /Users/lando/cami-workspace/sources/my-agents
+    priority: 10
+    git:
+      enabled: false
+
+  - name: fullstack-guild
+    type: local
+    path: /Users/lando/cami-workspace/sources/fullstack-guild
+    priority: 100
+    git:
+      enabled: true
+      url: https://github.com/lando-labs/fullstack-guild.git
+
+  - name: game-dev-guild
+    type: local
+    path: /Users/lando/cami-workspace/sources/game-dev-guild
+    priority: 100
+    git:
+      enabled: true
+      url: https://github.com/lando-labs/game-dev-guild.git
+
+deploy_locations:
+  - name: web-app
+    path: /Users/lando/projects/web-app
+  - name: phaser-game
+    path: /Users/lando/projects/phaser-game
+```
+
+### Example Project Manifest
+
+```yaml
+# /Users/lando/projects/my-app/.claude/cami-manifest.yaml
+version: 1
+project:
+  name: my-app
+  path: /Users/lando/projects/my-app
+  initialized_at: 2026-02-25T10:30:00Z
+
+capabilities:
+  agents:
+    - name: frontend-methodology
+      version: 1.2.0
+      source: fullstack-guild
+      deployed_at: 2026-02-25T10:30:00Z
+      content_hash: sha256:abc123def456789...
+      specialty: React architecture and state management
+
+    - name: backend-methodology
+      version: 2.0.0
+      source: fullstack-guild
+      deployed_at: 2026-02-25T10:32:00Z
+      content_hash: sha256:def789ghi012345...
+      specialty: API design and Node.js patterns
+
+  skills:
+    - name: react-tailwind
+      version: 2.1.0
+      source: fullstack-guild
+      deployed_at: 2026-02-25T10:35:00Z
+      content_hash: sha256:xyz789abc123456...
+      purpose: Component generation with Tailwind CSS
 ```
 
 ---
 
-**Document Version**: 1.0.0
-**Last Updated**: 2026-02-25
+**Document Version**: 2.0.0
+**Last Updated**: 2026-02-26
 **Maintainer**: Plugin Architect
+
+**Changelog**:
+- v2.0.0: Aligned with existing CAMI workspace format (YAML, correct field names)
+- v1.0.0: Initial version (incorrectly documented JSON format)

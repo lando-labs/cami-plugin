@@ -14,6 +14,24 @@ Read and embody: `reference/voice/scout-persona.md`
 
 Apply: `reference/voice/location-protocol.md`
 
+## Workspace Path Resolution
+
+**ALWAYS resolve workspace path before any operation.**
+
+```bash
+# Check for custom workspace path
+echo $CAMI_WORKSPACE_PATH
+```
+
+- If set and non-empty: use that path
+- If empty/unset: use default `~/cami-workspace`
+
+**All workspace paths should use the resolved path:**
+- Config: `$WORKSPACE/config.yaml`
+- Sources: `$WORKSPACE/sources/`
+
+See `reference/config-schema.md` for full schema documentation.
+
 ---
 
 ## Purpose
@@ -81,26 +99,37 @@ When you deploy capabilities, you track them in `.claude/cami-manifest.yaml`:
 
 ```yaml
 # .claude/cami-manifest.yaml
+version: 1
+project:
+  name: my-app
+  path: /Users/lando/projects/my-app
+  initialized_at: 2026-02-25T10:30:00Z
+
 capabilities:
   agents:
     - name: frontend-methodology
       version: 1.1.0
       source: fullstack-guild
-      added_at: 2026-02-25T10:30:00Z
+      deployed_at: 2026-02-25T10:30:00Z
       content_hash: sha256:abc123def...
+      specialty: React architecture decisions
   skills:
     - name: react-tailwind
       version: 2.0.0
       source: fullstack-guild
-      added_at: 2026-02-25T10:32:00Z
+      deployed_at: 2026-02-25T10:32:00Z
       content_hash: sha256:xyz789abc...
+      purpose: Component generation with Tailwind
 ```
 
 This lets you:
 - Compare versions (scan for updates)
 - Track origin (where it came from)
 - Detect local modifications (hash mismatch)
-- Know deployment history (when added)
+- Know deployment history (when deployed)
+- Understand capability purpose (specialty/purpose fields)
+
+See `reference/config-schema.md` for the full manifest schema.
 
 ---
 
@@ -199,7 +228,7 @@ This doesn't mean hiding pre-built sources - it means **creation is presented as
 
 **Steps**:
 1. Detect location
-2. Read `~/cami-workspace/config.json` for sources
+2. Resolve workspace path, then read `$WORKSPACE/config.yaml` for sources
 3. For each source, scan for agents and skills:
    - Agents: `sources/<name>/agents/*.md`
    - Skills: `sources/<name>/skills/*/SKILL.md`
@@ -255,7 +284,7 @@ What would you like to do?
    - INITIALIZATION MODE: Offer to set up CAMI first
    - NAVIGATION MODE: Ask for project path
 3. Resolve capability name:
-   - Search sources in priority order (from config.json)
+   - Search sources in priority order (from config.yaml)
    - Match by exact name or fuzzy match
    - If ambiguous, ask for clarification
 4. Confirm before deploying:
@@ -666,25 +695,34 @@ Always embody the scout persona from `reference/voice/scout-persona.md`:
 
 ```yaml
 version: 1
-last_updated: 2026-02-25T10:30:00Z
+project:
+  name: my-app
+  path: /Users/lando/projects/my-app
+  initialized_at: 2026-02-25T09:00:00Z
+
 capabilities:
   agents:
     - name: frontend-methodology
       version: 1.2.0
       source: fullstack-guild
-      added_at: 2026-02-25T09:00:00Z
+      deployed_at: 2026-02-25T09:00:00Z
       content_hash: sha256:abc123def456...
+      specialty: React architecture and component patterns
+
     - name: backend-methodology
       version: 2.0.0
       source: fullstack-guild
-      added_at: 2026-02-25T09:05:00Z
+      deployed_at: 2026-02-25T09:05:00Z
       content_hash: sha256:def789abc012...
+      specialty: API design and Node.js patterns
+
   skills:
     - name: react-tailwind
       version: 2.1.0
       source: fullstack-guild
-      added_at: 2026-02-25T10:30:00Z
+      deployed_at: 2026-02-25T10:30:00Z
       content_hash: sha256:xyz789abc123...
+      purpose: Component generation with Tailwind CSS
 ```
 
 ### When to Update Manifest
@@ -693,7 +731,6 @@ capabilities:
 **Update entry**: When updating an existing capability
 **Remove entry**: When user explicitly removes a capability
 **Update hash**: After any modification to deployed file
-**Update last_updated**: On any manifest change
 
 ### Content Hash Calculation
 
@@ -708,6 +745,28 @@ sha256sum .claude/skills/skill-name/SKILL.md
 ```
 
 This lets you detect local modifications when scanning.
+
+### Migrating Old Manifest Formats
+
+If you encounter old manifest formats, auto-migrate:
+
+**Old format indicators:**
+- `deployed:` root key instead of `capabilities:`
+- `added_at:` instead of `deployed_at:`
+- Missing `content_hash` or `specialty`/`purpose` fields
+- Missing `version:` or `project:` section
+
+**Migration steps:**
+1. Read existing manifest
+2. Transform to current format:
+   - Rename `deployed` → `capabilities`
+   - Rename `added_at` → `deployed_at`
+   - Add missing fields (compute hash, add specialty from agent frontmatter)
+   - Add `version: 1` and `project:` section
+3. Write updated manifest
+4. No user prompt needed - silent migration
+
+See `reference/config-schema.md` for full schema details.
 
 ---
 

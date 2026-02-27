@@ -13,6 +13,24 @@ Read and embody: `reference/voice/scout-persona.md`
 
 Apply: `reference/voice/location-protocol.md`
 
+## Workspace Path Resolution
+
+**ALWAYS resolve workspace path before any operation.**
+
+```bash
+# Check for custom workspace path
+echo $CAMI_WORKSPACE_PATH
+```
+
+- If set and non-empty: use that path
+- If empty/unset: use default `~/cami-workspace`
+
+**All workspace paths should use the resolved path:**
+- Config: `$WORKSPACE/config.yaml`
+- Sources: `$WORKSPACE/sources/`
+
+See `reference/config-schema.md` for full schema documentation.
+
 ---
 
 ## Purpose
@@ -516,7 +534,7 @@ All set! Your roster is deployed."
 
 #### Source Priority
 
-Check sources in priority order (from config.json):
+Check sources in priority order (from config.yaml):
 1. User custom sources (priority 100)
 2. Official sources (priority 50)
 3. External sources (priority 10)
@@ -539,65 +557,60 @@ Create `.claude/cami-manifest.yaml` to track deployments.
 
 #### Manifest Format
 
+Use the **standardized manifest format** from `reference/config-schema.md`:
+
 ```yaml
-# CAMI Deployment Manifest
-# Auto-generated: [timestamp]
-
+# .claude/cami-manifest.yaml
+version: 1
 project:
-  name: [project-name]
-  path: [project-path]
-  type: [project-type]
-  initialized: [timestamp]
+  name: my-app
+  path: /Users/lando/projects/my-app
+  initialized_at: 2026-02-25T10:30:00Z
 
-tech_stack:
-  frontend:
-    - React 19.0.0
-    - TypeScript 5.0.0
-    - Tailwind CSS 3.4.0
-  backend:
-    - Node.js 20.0.0
-    - Express 4.18.0
-  database:
-    - PostgreSQL 15
-  testing:
-    - Vitest 1.0.0
-    - Playwright 1.40.0
-
-deployed:
+capabilities:
   agents:
     - name: frontend-methodology
       version: 1.2.0
       source: fullstack-guild
-      deployed_at: [timestamp]
+      deployed_at: 2026-02-25T10:30:00Z
+      content_hash: sha256:abc123def...
       specialty: React architecture decisions
 
     - name: backend-methodology
       version: 1.2.0
       source: fullstack-guild
-      deployed_at: [timestamp]
+      deployed_at: 2026-02-25T10:32:00Z
+      content_hash: sha256:def456ghi...
       specialty: API design patterns
 
     - name: database-methodology
       version: 1.0.0
       source: fullstack-guild
-      deployed_at: [timestamp]
+      deployed_at: 2026-02-25T10:34:00Z
+      content_hash: sha256:ghi789jkl...
       specialty: PostgreSQL schema design
 
   skills:
     - name: react-tailwind
       version: 1.0.0
       source: fullstack-guild
-      deployed_at: [timestamp]
+      deployed_at: 2026-02-25T10:36:00Z
+      content_hash: sha256:jkl012mno...
       purpose: Component generation with Tailwind
 
     - name: express-api-patterns
       version: 1.0.0
       source: fullstack-guild
-      deployed_at: [timestamp]
+      deployed_at: 2026-02-25T10:38:00Z
+      content_hash: sha256:mno345pqr...
       purpose: RESTful API scaffolding
-
-workspace_tracked: false  # true if added to workspace tracking
 ```
+
+**Key fields:**
+- `capabilities` (not `deployed`) - root key for all capabilities
+- `deployed_at` (not `added_at`) - when capability was deployed
+- `content_hash` - SHA-256 for update detection
+- `specialty`/`purpose` - human-readable description
 
 ---
 
@@ -709,7 +722,7 @@ Add it to tracking?"
 
 #### Tracked Locations Entry
 
-If yes, add to `~/cami-workspace/config.json`:
+If yes, add to `~/cami-workspace/config.yaml`:
 
 ```json
 {
