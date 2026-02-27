@@ -1,6 +1,7 @@
 ---
 name: create-agent
 description: Triggers on requests to create, build, or draft new agents. Examples: "create an agent", "I need a frontend agent", "build me a database specialist", "help me create an agent for [domain]". Also triggers on roster-building requests like "what agents do I need for this project" or "help me build my agent roster". Guides agent vs skill decision, invokes agent-architect, handles location-aware save behavior, and can orchestrate full roster creation.
+allowed-tools: Read, Write, Edit, Bash, Glob, Skill, Task
 ---
 
 # Create Agent Skill

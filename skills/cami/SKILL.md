@@ -1,6 +1,7 @@
 ---
 name: cami
 description: Entry point for CAMI - the agent scout. Triggers on greetings ("hey cami", "cami help"), help requests ("help", "show commands", "what can I do"), onboarding requests ("get started", "set up cami"), capability discovery ("what can you do", "help me with agents"), and any ambiguous agent-related questions. Establishes scout persona, detects user location (workspace/project/initialization/navigation), handles conceptual questions and help display directly, and routes deployment/source management/agent creation to specialized skills.
+allowed-tools: Read, Bash, Glob, Skill
 ---
 
 # CAMI Entry Skill
