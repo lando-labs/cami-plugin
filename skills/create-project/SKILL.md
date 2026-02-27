@@ -555,62 +555,87 @@ Ready to create it?"
 
 Create `.claude/cami-manifest.yaml` to track deployments.
 
-#### Manifest Format
+#### Manifest Format (v2)
 
 Use the **standardized manifest format** from `reference/config-schema.md`:
 
 ```yaml
 # .claude/cami-manifest.yaml
-version: 1
-project:
-  name: my-app
-  path: /Users/lando/projects/my-app
-  initialized_at: 2026-02-25T10:30:00Z
+version: "2"
+manifest_format_version: 2
+state: cami-native
+normalized_at: 2026-02-25T10:30:00Z
+last_scanned: 2026-02-25T10:30:00Z
 
-capabilities:
-  agents:
-    - name: frontend-methodology
-      version: 1.2.0
-      source: fullstack-guild
-      deployed_at: 2026-02-25T10:30:00Z
-      content_hash: sha256:abc123def...
-      specialty: React architecture decisions
+agents:
+  - name: frontend-methodology
+    version: 1.2.0
+    source: fullstack-guild
+    source_path: /Users/lando/cami-workspace/sources/fullstack-guild/agents/frontend-methodology.md
+    priority: 40
+    deployed_at: 2026-02-25T10:30:00Z
+    content_hash: sha256:abc123def...
+    metadata_hash: sha256:def456ghi...
+    custom_override: false
+    origin: cami
 
-    - name: backend-methodology
-      version: 1.2.0
-      source: fullstack-guild
-      deployed_at: 2026-02-25T10:32:00Z
-      content_hash: sha256:def456ghi...
-      specialty: API design patterns
+  - name: backend-methodology
+    version: 1.2.0
+    source: fullstack-guild
+    source_path: /Users/lando/cami-workspace/sources/fullstack-guild/agents/backend-methodology.md
+    priority: 40
+    deployed_at: 2026-02-25T10:32:00Z
+    content_hash: sha256:ghi789jkl...
+    metadata_hash: sha256:jkl012mno...
+    custom_override: false
+    origin: cami
 
-    - name: database-methodology
-      version: 1.0.0
-      source: fullstack-guild
-      deployed_at: 2026-02-25T10:34:00Z
-      content_hash: sha256:ghi789jkl...
-      specialty: PostgreSQL schema design
+  - name: database-methodology
+    version: 1.0.0
+    source: fullstack-guild
+    source_path: /Users/lando/cami-workspace/sources/fullstack-guild/agents/database-methodology.md
+    priority: 40
+    deployed_at: 2026-02-25T10:34:00Z
+    content_hash: sha256:mno345pqr...
+    metadata_hash: sha256:pqr678stu...
+    custom_override: false
+    origin: cami
 
-  skills:
-    - name: react-tailwind
-      version: 1.0.0
-      source: fullstack-guild
-      deployed_at: 2026-02-25T10:36:00Z
-      content_hash: sha256:jkl012mno...
-      purpose: Component generation with Tailwind
+skills:
+  - name: react-tailwind
+    version: 1.0.0
+    source: fullstack-guild
+    source_path: /Users/lando/cami-workspace/sources/fullstack-guild/skills/react-tailwind/SKILL.md
+    priority: 40
+    deployed_at: 2026-02-25T10:36:00Z
+    content_hash: sha256:stu901vwx...
+    metadata_hash: sha256:vwx234yza...
+    custom_override: false
+    origin: cami
 
-    - name: express-api-patterns
-      version: 1.0.0
-      source: fullstack-guild
-      deployed_at: 2026-02-25T10:38:00Z
-      content_hash: sha256:mno345pqr...
-      purpose: RESTful API scaffolding
+  - name: express-api-patterns
+    version: 1.0.0
+    source: fullstack-guild
+    source_path: /Users/lando/cami-workspace/sources/fullstack-guild/skills/express-api-patterns/SKILL.md
+    priority: 40
+    deployed_at: 2026-02-25T10:38:00Z
+    content_hash: sha256:yza567bcd...
+    metadata_hash: sha256:bcd890efg...
+    custom_override: false
+    origin: cami
 ```
 
 **Key fields:**
-- `capabilities` (not `deployed`) - root key for all capabilities
-- `deployed_at` (not `added_at`) - when capability was deployed
-- `content_hash` - SHA-256 for update detection
-- `specialty`/`purpose` - human-readable description
+- `version: "2"` - Schema version (string format)
+- `manifest_format_version: 2` - Format version number
+- `state` - Project state: `cami-native`, `imported`, or `legacy`
+- `agents`/`skills` - At root level (not under `capabilities`)
+- `deployed_at` - When capability was deployed
+- `content_hash`/`metadata_hash` - SHA-256 for update detection
+- `source_path` - Absolute path to source file
+- `priority` - Source priority from config.yaml
+- `custom_override` - True if user modified the deployed file
+- `origin` - How deployed: `cami`, `manual`, or `imported`
 
 ---
 

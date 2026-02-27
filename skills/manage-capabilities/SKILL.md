@@ -99,27 +99,35 @@ When you deploy capabilities, you track them in `.claude/cami-manifest.yaml`:
 
 ```yaml
 # .claude/cami-manifest.yaml
-version: 1
-project:
-  name: my-app
-  path: /Users/lando/projects/my-app
-  initialized_at: 2026-02-25T10:30:00Z
+version: "2"
+manifest_format_version: 2
+state: cami-native
+normalized_at: 2026-02-25T10:30:00Z
+last_scanned: 2026-02-26T15:00:00Z
 
-capabilities:
-  agents:
-    - name: frontend-methodology
-      version: 1.1.0
-      source: fullstack-guild
-      deployed_at: 2026-02-25T10:30:00Z
-      content_hash: sha256:abc123def...
-      specialty: React architecture decisions
-  skills:
-    - name: react-tailwind
-      version: 2.0.0
-      source: fullstack-guild
-      deployed_at: 2026-02-25T10:32:00Z
-      content_hash: sha256:xyz789abc...
-      purpose: Component generation with Tailwind
+agents:
+  - name: frontend-methodology
+    version: 1.1.0
+    source: fullstack-guild
+    source_path: /Users/lando/cami-workspace/sources/fullstack-guild/agents/frontend-methodology.md
+    priority: 40
+    deployed_at: 2026-02-25T10:30:00Z
+    content_hash: sha256:abc123def...
+    metadata_hash: sha256:def456ghi...
+    custom_override: false
+    origin: cami
+
+skills:
+  - name: react-tailwind
+    version: 2.0.0
+    source: fullstack-guild
+    source_path: /Users/lando/cami-workspace/sources/fullstack-guild/skills/react-tailwind/SKILL.md
+    priority: 40
+    deployed_at: 2026-02-25T10:32:00Z
+    content_hash: sha256:xyz789abc...
+    metadata_hash: sha256:abc789xyz...
+    custom_override: false
+    origin: cami
 ```
 
 This lets you:
@@ -127,9 +135,10 @@ This lets you:
 - Track origin (where it came from)
 - Detect local modifications (hash mismatch)
 - Know deployment history (when deployed)
-- Understand capability purpose (specialty/purpose fields)
+- Track source path and priority for resolution
+- Detect custom overrides vs managed deployments
 
-See `reference/config-schema.md` for the full manifest schema.
+See `reference/config-schema.md` for the full manifest schema and migration guidance.
 
 ---
 
@@ -689,40 +698,51 @@ Always embody the scout persona from `reference/voice/scout-persona.md`:
 
 ## Manifest Management
 
-### Manifest Format
+### Manifest Format (v2)
 
 `.claude/cami-manifest.yaml`:
 
 ```yaml
-version: 1
-project:
-  name: my-app
-  path: /Users/lando/projects/my-app
-  initialized_at: 2026-02-25T09:00:00Z
+version: "2"
+manifest_format_version: 2
+state: cami-native
+normalized_at: 2026-02-25T09:00:00Z
+last_scanned: 2026-02-26T15:00:00Z
 
-capabilities:
-  agents:
-    - name: frontend-methodology
-      version: 1.2.0
-      source: fullstack-guild
-      deployed_at: 2026-02-25T09:00:00Z
-      content_hash: sha256:abc123def456...
-      specialty: React architecture and component patterns
+agents:
+  - name: frontend-methodology
+    version: 1.2.0
+    source: fullstack-guild
+    source_path: /Users/lando/cami-workspace/sources/fullstack-guild/agents/frontend-methodology.md
+    priority: 40
+    deployed_at: 2026-02-25T09:00:00Z
+    content_hash: sha256:abc123def456...
+    metadata_hash: sha256:def456ghi789...
+    custom_override: false
+    origin: cami
 
-    - name: backend-methodology
-      version: 2.0.0
-      source: fullstack-guild
-      deployed_at: 2026-02-25T09:05:00Z
-      content_hash: sha256:def789abc012...
-      specialty: API design and Node.js patterns
+  - name: backend-methodology
+    version: 2.0.0
+    source: fullstack-guild
+    source_path: /Users/lando/cami-workspace/sources/fullstack-guild/agents/backend-methodology.md
+    priority: 40
+    deployed_at: 2026-02-25T09:05:00Z
+    content_hash: sha256:def789abc012...
+    metadata_hash: sha256:ghi012jkl345...
+    custom_override: false
+    origin: cami
 
-  skills:
-    - name: react-tailwind
-      version: 2.1.0
-      source: fullstack-guild
-      deployed_at: 2026-02-25T10:30:00Z
-      content_hash: sha256:xyz789abc123...
-      purpose: Component generation with Tailwind CSS
+skills:
+  - name: react-tailwind
+    version: 2.1.0
+    source: fullstack-guild
+    source_path: /Users/lando/cami-workspace/sources/fullstack-guild/skills/react-tailwind/SKILL.md
+    priority: 40
+    deployed_at: 2026-02-25T10:30:00Z
+    content_hash: sha256:xyz789abc123...
+    metadata_hash: sha256:abc123xyz789...
+    custom_override: false
+    origin: cami
 ```
 
 ### When to Update Manifest
@@ -748,25 +768,36 @@ This lets you detect local modifications when scanning.
 
 ### Migrating Old Manifest Formats
 
-If you encounter old manifest formats, auto-migrate:
+If you encounter old manifest formats, auto-migrate to v2:
 
 **Old format indicators:**
-- `deployed:` root key instead of `capabilities:`
+- `version: 1` (number) instead of `version: "2"` (string)
+- `capabilities:` root key instead of `agents:` at root level
+- `deployed:` root key (very old format)
 - `added_at:` instead of `deployed_at:`
-- Missing `content_hash` or `specialty`/`purpose` fields
-- Missing `version:` or `project:` section
+- `project:` section (v1 format)
+- Missing `manifest_format_version`, `state`, `normalized_at`, `last_scanned`
+- Missing `source_path`, `priority`, `metadata_hash`, `custom_override`, `origin`
 
 **Migration steps:**
 1. Read existing manifest
-2. Transform to current format:
-   - Rename `deployed` → `capabilities`
-   - Rename `added_at` → `deployed_at`
-   - Add missing fields (compute hash, add specialty from agent frontmatter)
-   - Add `version: 1` and `project:` section
-3. Write updated manifest
-4. No user prompt needed - silent migration
+2. Check `version` field - if `1` or number, needs migration
+3. Transform to v2 format:
+   - `capabilities.agents` → `agents` (move to root)
+   - `capabilities.skills` → `skills` (move to root)
+   - `project.initialized_at` → `normalized_at`
+   - `added_at` → `deployed_at`
+   - Add `version: "2"` and `manifest_format_version: 2`
+   - Add `state: "cami-native"`
+   - Add `last_scanned: <current_time>`
+   - Resolve `source_path` from source + name
+   - Read `priority` from config.yaml for that source
+   - Compute `metadata_hash` from frontmatter
+   - Add `custom_override: false` and `origin: "cami"`
+4. Write updated manifest
+5. No user prompt needed - silent migration
 
-See `reference/config-schema.md` for full schema details.
+See `reference/config-schema.md` for full schema details and migration examples.
 
 ---
 

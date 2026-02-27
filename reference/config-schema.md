@@ -400,96 +400,237 @@ Available sources: fullstack-source, custom
 
 ---
 
+## Deployment Tracking Architecture
+
+CAMI uses a two-tier deployment tracking system:
+
+1. **Centralized**: `~/cami-workspace/deployments.yaml` - Source of truth for ALL deployments
+2. **Per-Project**: `<project>/.claude/cami-manifest.yaml` - Cache of that project's deployment data
+
+Both files use the **same schema** for consistency.
+
+---
+
+## Centralized Deployments (deployments.yaml)
+
+**Location**: `$WORKSPACE/deployments.yaml`
+
+This is the master record of all deployments across all projects.
+
+```yaml
+# ~/cami-workspace/deployments.yaml
+version: "2"
+last_updated: 2026-02-05T14:07:59.387077-06:00
+manifest_format_version: 2
+
+deployments:
+  /Users/lando/projects/my-app:
+    state: cami-native
+    normalized_at: 2026-01-28T22:17:31.633506-06:00
+    last_scanned: 2026-01-29T22:44:47.131615-06:00
+    agents:
+      - name: frontend-methodology
+        version: 1.2.0
+        source: fullstack-guild
+        source_path: /Users/lando/cami-workspace/sources/fullstack-guild/agents/frontend-methodology.md
+        priority: 40
+        deployed_at: 2026-01-28T22:17:31.633506-06:00
+        content_hash: sha256:abc123def456...
+        metadata_hash: sha256:def789ghi012...
+        custom_override: false
+        origin: cami
+
+  /Users/lando/projects/other-app:
+    state: cami-native
+    # ... same structure
+```
+
+---
+
 ## Project Manifest Schema (cami-manifest.yaml)
 
-Each project that has CAMI capabilities deployed has a manifest file at `.claude/cami-manifest.yaml`.
+Each project has a manifest at `.claude/cami-manifest.yaml` that mirrors the centralized data for that project.
 
 ### Standardized Format
 
 ```yaml
 # .claude/cami-manifest.yaml
+version: "2"
+manifest_format_version: 2
+state: cami-native
+normalized_at: 2026-01-28T22:17:31.633506-06:00
+last_scanned: 2026-01-29T22:44:47.131615-06:00
+
+agents:
+  - name: frontend-methodology
+    version: 1.2.0
+    source: fullstack-guild
+    source_path: /Users/lando/cami-workspace/sources/fullstack-guild/agents/frontend-methodology.md
+    priority: 40
+    deployed_at: 2026-01-28T22:17:31.633506-06:00
+    content_hash: sha256:abc123def456...
+    metadata_hash: sha256:def789ghi012...
+    custom_override: false
+    origin: cami
+
+  - name: backend-methodology
+    version: 2.0.0
+    source: fullstack-guild
+    source_path: /Users/lando/cami-workspace/sources/fullstack-guild/agents/backend-methodology.md
+    priority: 40
+    deployed_at: 2026-01-28T22:20:00.000000-06:00
+    content_hash: sha256:ghi789jkl012...
+    metadata_hash: sha256:jkl345mno678...
+    custom_override: false
+    origin: cami
+
+skills:
+  - name: react-tailwind
+    version: 2.1.0
+    source: fullstack-guild
+    source_path: /Users/lando/cami-workspace/sources/fullstack-guild/skills/react-tailwind/SKILL.md
+    priority: 40
+    deployed_at: 2026-01-28T22:25:00.000000-06:00
+    content_hash: sha256:mno456pqr789...
+    metadata_hash: sha256:pqr012stu345...
+    custom_override: false
+    origin: cami
+```
+
+### Top-Level Fields
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `version` | string | Yes | Schema version, currently `"2"` |
+| `manifest_format_version` | number | Yes | Format version, currently `2` |
+| `state` | string | Yes | Project state: `cami-native`, `imported`, `legacy` |
+| `normalized_at` | string | Yes | ISO 8601 timestamp of last normalization |
+| `last_scanned` | string | Yes | ISO 8601 timestamp of last scan |
+| `agents` | array | Yes | Array of deployed agents |
+| `skills` | array | Yes | Array of deployed skills |
+
+### Agent/Skill Entry Fields
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `name` | string | Yes | Capability name (matches filename without .md) |
+| `version` | string | Yes | Semantic version from source frontmatter |
+| `source` | string | Yes | Source name it came from |
+| `source_path` | string | Yes | Absolute path to source file |
+| `priority` | number | Yes | Source priority (from config.yaml) |
+| `deployed_at` | string | Yes | ISO 8601 timestamp of deployment |
+| `content_hash` | string | Yes | SHA-256 of file content (for update detection) |
+| `metadata_hash` | string | Yes | SHA-256 of frontmatter (for metadata changes) |
+| `custom_override` | boolean | Yes | True if user modified the deployed file |
+| `origin` | string | Yes | How it was deployed: `cami`, `manual`, `imported` |
+
+### State Values
+
+| State | Description |
+|-------|-------------|
+| `cami-native` | Project initialized and managed by CAMI |
+| `imported` | Agents imported from another project |
+| `legacy` | Pre-CAMI project with manually added agents |
+
+### Origin Values
+
+| Origin | Description |
+|--------|-------------|
+| `cami` | Deployed via CAMI skill/command |
+| `manual` | User manually copied the file |
+| `imported` | Imported from another project |
+
+---
+
+## Migration: Old Manifest Formats
+
+Skills may encounter old manifest formats. Here's how to handle them:
+
+### Format Detection
+
+**Version 1 / Plugin-Created Format**:
+```yaml
 version: 1
 project:
   name: my-app
-  path: /Users/lando/projects/my-app
-  initialized_at: 2026-02-25T10:30:00Z
+capabilities:
+  agents:
+    - name: frontend-methodology
+      deployed_at: 2026-02-25T10:30:00Z
+```
 
+**Very Old Format** (`deployed` root key):
+```yaml
+deployed:
+  agents:
+    - name: frontend-methodology
+      added_at: 2026-02-25T10:30:00Z
+```
+
+### Migration Logic
+
+When reading a manifest, detect and auto-migrate:
+
+1. **Check `version` field**:
+   - If `version: 1` or `version` is a number → needs migration
+   - If `version: "2"` → current format
+
+2. **Migrate structure**:
+   - `capabilities.agents` → `agents` (move to root)
+   - `capabilities.skills` → `skills` (move to root)
+   - `project.initialized_at` → `normalized_at`
+   - Add `manifest_format_version: 2`
+   - Add `state: "cami-native"`
+   - Add `last_scanned: <current_time>`
+
+3. **Migrate agent fields**:
+   - `added_at` → `deployed_at`
+   - Add missing fields with defaults:
+     - `source_path`: Resolve from source + name
+     - `priority`: Read from config.yaml for that source
+     - `metadata_hash`: Compute from frontmatter
+     - `custom_override: false`
+     - `origin: "cami"`
+
+4. **Write updated manifest** (silent, no user prompt)
+
+### Migration Example
+
+**Before (v1)**:
+```yaml
+version: 1
+project:
+  name: my-app
+  initialized_at: 2026-02-25T10:30:00Z
 capabilities:
   agents:
     - name: frontend-methodology
       version: 1.2.0
       source: fullstack-guild
       deployed_at: 2026-02-25T10:30:00Z
-      content_hash: sha256:abc123def456...
-      specialty: React architecture decisions
-
-    - name: backend-methodology
-      version: 2.0.0
-      source: fullstack-guild
-      deployed_at: 2026-02-25T10:32:00Z
-      content_hash: sha256:def789ghi012...
-      specialty: API design patterns
-
-  skills:
-    - name: react-tailwind
-      version: 2.1.0
-      source: fullstack-guild
-      deployed_at: 2026-02-25T10:35:00Z
-      content_hash: sha256:xyz789abc123...
-      purpose: Component generation with Tailwind
+      content_hash: sha256:abc123...
 ```
 
-### Field Definitions
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `version` | number | Yes | Manifest schema version (currently 1) |
-| `project.name` | string | Yes | Project display name |
-| `project.path` | string | Yes | Absolute path to project |
-| `project.initialized_at` | string | Yes | ISO 8601 timestamp |
-| `capabilities.agents` | array | Yes | Array of deployed agents |
-| `capabilities.skills` | array | Yes | Array of deployed skills |
-
-### Capability Entry Fields
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `name` | string | Yes | Capability name (matches filename) |
-| `version` | string | Yes | Semantic version from source |
-| `source` | string | Yes | Source name it came from |
-| `deployed_at` | string | Yes | ISO 8601 timestamp of deployment |
-| `content_hash` | string | Yes | SHA-256 of deployed file (for update detection) |
-| `specialty` | string | No | Agent specialty description |
-| `purpose` | string | No | Skill purpose description |
-
-### Migration: Old Manifest Formats
-
-Skills may encounter old manifest formats. Here's how to handle them:
-
-**Old Format A** (`deployed` root key):
+**After (v2)**:
 ```yaml
-deployed:
-  agents:
-    - name: frontend-methodology
-      deployed_at: 2026-02-25T10:30:00Z
+version: "2"
+manifest_format_version: 2
+state: cami-native
+normalized_at: 2026-02-25T10:30:00Z
+last_scanned: 2026-02-26T15:00:00Z
+agents:
+  - name: frontend-methodology
+    version: 1.2.0
+    source: fullstack-guild
+    source_path: /Users/lando/cami-workspace/sources/fullstack-guild/agents/frontend-methodology.md
+    priority: 40
+    deployed_at: 2026-02-25T10:30:00Z
+    content_hash: sha256:abc123...
+    metadata_hash: sha256:def456...
+    custom_override: false
+    origin: cami
+skills: []
 ```
-
-**Old Format B** (`capabilities` without hash):
-```yaml
-capabilities:
-  agents:
-    - name: frontend-methodology
-      added_at: 2026-02-25T10:30:00Z
-```
-
-**Migration Logic**:
-1. Check for `deployed` root key → rename to `capabilities`
-2. Check for `added_at` field → rename to `deployed_at`
-3. Check for missing `content_hash` → compute and add
-4. Check for missing `version` field → read from source, add `1.0.0` if unknown
-5. Write updated manifest
-
-**When to Migrate**: On any manifest read operation, detect old formats and auto-migrate. No user prompt needed.
 
 ---
 
@@ -525,10 +666,13 @@ version: 1  # Current version
 
 ### Project Manifest (cami-manifest.yaml)
 
-- [x] Use `capabilities` as root key (not `deployed`)
+- [x] Use `agents` at root level (not under `capabilities`)
+- [x] Use `version: "2"` (string format)
+- [x] Include `manifest_format_version: 2`
+- [x] Include `state`, `normalized_at`, `last_scanned` at top level
 - [x] Use `deployed_at` for timestamp (not `added_at`)
-- [x] Include `content_hash` for update detection
-- [x] Include `specialty`/`purpose` for documentation
+- [x] Include `content_hash` and `metadata_hash` for update detection
+- [x] Include `source_path`, `priority`, `custom_override`, `origin`
 - [ ] Auto-migrate old manifest formats on read
 - [ ] Compute content_hash on deployment
 
@@ -682,39 +826,50 @@ deploy_locations:
     path: /Users/lando/projects/phaser-game
 ```
 
-### Example Project Manifest
+### Example Project Manifest (v2 Format)
 
 ```yaml
 # /Users/lando/projects/my-app/.claude/cami-manifest.yaml
-version: 1
-project:
-  name: my-app
-  path: /Users/lando/projects/my-app
-  initialized_at: 2026-02-25T10:30:00Z
+version: "2"
+manifest_format_version: 2
+state: cami-native
+normalized_at: 2026-02-25T10:30:00Z
+last_scanned: 2026-02-26T15:00:00Z
 
-capabilities:
-  agents:
-    - name: frontend-methodology
-      version: 1.2.0
-      source: fullstack-guild
-      deployed_at: 2026-02-25T10:30:00Z
-      content_hash: sha256:abc123def456789...
-      specialty: React architecture and state management
+agents:
+  - name: frontend-methodology
+    version: 1.2.0
+    source: fullstack-guild
+    source_path: /Users/lando/cami-workspace/sources/fullstack-guild/agents/frontend-methodology.md
+    priority: 40
+    deployed_at: 2026-02-25T10:30:00Z
+    content_hash: sha256:abc123def456789...
+    metadata_hash: sha256:def456ghi789...
+    custom_override: false
+    origin: cami
 
-    - name: backend-methodology
-      version: 2.0.0
-      source: fullstack-guild
-      deployed_at: 2026-02-25T10:32:00Z
-      content_hash: sha256:def789ghi012345...
-      specialty: API design and Node.js patterns
+  - name: backend-methodology
+    version: 2.0.0
+    source: fullstack-guild
+    source_path: /Users/lando/cami-workspace/sources/fullstack-guild/agents/backend-methodology.md
+    priority: 40
+    deployed_at: 2026-02-25T10:32:00Z
+    content_hash: sha256:def789ghi012345...
+    metadata_hash: sha256:ghi012jkl345...
+    custom_override: false
+    origin: cami
 
-  skills:
-    - name: react-tailwind
-      version: 2.1.0
-      source: fullstack-guild
-      deployed_at: 2026-02-25T10:35:00Z
-      content_hash: sha256:xyz789abc123456...
-      purpose: Component generation with Tailwind CSS
+skills:
+  - name: react-tailwind
+    version: 2.1.0
+    source: fullstack-guild
+    source_path: /Users/lando/cami-workspace/sources/fullstack-guild/skills/react-tailwind/SKILL.md
+    priority: 40
+    deployed_at: 2026-02-25T10:35:00Z
+    content_hash: sha256:xyz789abc123456...
+    metadata_hash: sha256:abc123xyz789...
+    custom_override: false
+    origin: cami
 ```
 
 ---
