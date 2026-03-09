@@ -1,6 +1,6 @@
 # CAMI Plugin
 
-**Claude Agent Management Interface**
+**Claude Capability Management Interface**
 
 Your agent scout for Claude Code. Build championship teams of specialized AI agents for any project.
 

@@ -435,24 +435,26 @@ Initialize the `.claude/` directory with proper structure.
 
 ```
 <project>/
+├── CLAUDE.md               # Project instructions + capability table
 ├── .claude/
-│   ├── agents/              # Deployed agents
-│   ├── skills/              # Deployed skills (if any)
-│   ├── cami-manifest.yaml   # Deployment tracking
-│   └── CLAUDE.md            # Project instructions + capability table
+│   ├── agents/             # Deployed agents
+│   ├── skills/             # Deployed skills (if any)
+│   └── cami-manifest.yaml  # Deployment tracking
 ```
 
 #### Creation Process
 
 ```
-1. Create .claude/ directory
-2. Create agents/ subdirectory
-3. Create skills/ subdirectory (if skills to deploy)
-4. Initialize CLAUDE.md with template
-5. Initialize cami-manifest.yaml
+1. Initialize CLAUDE.md at project root (<project>/CLAUDE.md)
+2. Create .claude/ directory
+3. Create agents/ subdirectory
+4. Create skills/ subdirectory (if skills to deploy)
+5. Initialize cami-manifest.yaml in .claude/
 ```
 
 #### CLAUDE.md Template
+
+**Location**: `<project>/CLAUDE.md` (project root, NOT inside .claude/)
 
 ```markdown
 # [Project Name]
@@ -493,7 +495,7 @@ Skills are available via:
 
 ---
 
-*Managed by CAMI - Claude Agent Management Interface*
+*Managed by CAMI - Claude Capability Management Interface*
 ```
 
 ---
@@ -782,9 +784,9 @@ After completing all steps, provide a success summary.
 - All specialists ready to work
 
 **What's Created**:
+- CLAUDE.md - Project instructions + capability documentation
 - .claude/agents/ - Your agent roster
 - .claude/skills/ - Your implementation skills
-- .claude/CLAUDE.md - Capability documentation
 - .claude/cami-manifest.yaml - Deployment tracking
 [- .claude/vision.md - Project vision (if created)]
 
@@ -855,9 +857,9 @@ Deploying your roster...
 All set! Your e-commerce roster is deployed.
 
 Created:
+- CLAUDE.md (project instructions + capabilities)
 - .claude/agents/ (5 specialists)
 - .claude/skills/ (3 skills)
-- .claude/CLAUDE.md (capability documentation)
 - .claude/cami-manifest.yaml (tracking)
 
 Your team is ready. Want to add this to your workspace tracking?"
@@ -900,9 +902,9 @@ You: "Deploying your CLI specialist...
 All set! Your CLI project is initialized.
 
 Created:
+- CLAUDE.md (project instructions + capabilities)
 - .claude/agents/backend-methodology.md
 - .claude/skills/go-cli-patterns/
-- .claude/CLAUDE.md
 - .claude/cami-manifest.yaml
 
 Your specialist is ready to guide your CLI development."
@@ -1109,8 +1111,8 @@ If user doesn't want any agents:
 "No agents? That's fine - you can always add them later.
 
 I'll just initialize the structure for now:
+- CLAUDE.md created (project root)
 - .claude/ directory created
-- .claude/CLAUDE.md created
 - .claude/cami-manifest.yaml created
 
 When you're ready for agents, just ask: 'add [agent-name] to my roster'"

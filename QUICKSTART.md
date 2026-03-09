@@ -1,0 +1,296 @@
+# CAMI Plugin - Quickstart Guide
+
+Testing installation and full workflow on a fresh machine.
+
+---
+
+## Prerequisites
+
+1. **Claude Code CLI** installed and authenticated
+   ```bash
+   # Verify installation
+   claude --version
+
+   # Should show version 1.x or higher
+   ```
+
+2. **Git** installed (for source management)
+   ```bash
+   git --version
+   ```
+
+3. **A test project** with some code (or create one)
+   ```bash
+   mkdir ~/test-project && cd ~/test-project
+   npm init -y  # or any project setup
+   ```
+
+---
+
+## Installation Options
+
+### Option A: From GitHub (Recommended for Testing)
+
+```bash
+# Clone the plugin
+git clone https://github.com/lando-labs/cami-plugin.git ~/cami-plugin
+
+# Run Claude with the plugin loaded
+claude --plugin-dir ~/cami-plugin
+```
+
+### Option B: From Marketplace (When Published)
+
+```bash
+claude plugin install lando-labs/cami
+```
+
+---
+
+## Verification Checklist
+
+Run these tests to verify full functionality:
+
+### Test 1: Plugin Loaded
+
+```bash
+claude --plugin-dir ~/cami-plugin
+```
+
+In the session:
+```
+You: "Hey CAMI"
+```
+
+**Expected**: CAMI responds with greeting and workspace setup prompt.
+
+**Pass criteria**: Scout persona voice, location awareness shown.
+
+---
+
+### Test 2: Workspace Creation
+
+```
+You: "Yes, set up my workspace"
+```
+
+**Expected**: Creates `~/cami-workspace/` with:
+- `config.json`
+- `sources/` directory
+
+**Verify**:
+```bash
+ls -la ~/cami-workspace/
+```
+
+---
+
+### Test 3: Custom Agent Creation
+
+```
+You: "Create an agent for testing React components"
+```
+
+**Expected**:
+1. CAMI asks clarifying questions about focus areas
+2. Creates agent in `~/cami-workspace/sources/custom/`
+3. Offers to deploy
+
+**Verify**:
+```bash
+ls ~/cami-workspace/sources/custom/
+# Should show: testing-react-components.md (or similar)
+```
+
+---
+
+### Test 4: Agent Deployment
+
+Navigate to your test project:
+```bash
+cd ~/test-project
+claude --plugin-dir ~/cami-plugin
+```
+
+```
+You: "Deploy my testing agent to this project"
+```
+
+**Expected**:
+1. Agent copied to `.claude/agents/`
+2. Manifest created/updated
+3. Confirmation message
+
+**Verify**:
+```bash
+ls ~/test-project/.claude/agents/
+# Should show your deployed agent
+```
+
+---
+
+### Test 5: Source Addition
+
+```
+You: "Add the fullstack-guild source"
+```
+
+**Expected**:
+1. Clones from GitHub
+2. Shows available agents
+3. Offers recommendations
+
+**Verify**:
+```bash
+ls ~/cami-workspace/sources/
+# Should show: custom/, fullstack-guild/
+```
+
+---
+
+### Test 6: Roster Check
+
+```
+You: "What agents do I have deployed?"
+```
+
+**Expected**: Lists deployed agents with versions and update status.
+
+---
+
+### Test 7: Project Scouting
+
+```
+You: "Scout this project and recommend agents"
+```
+
+**Expected**:
+1. Analyzes tech stack (detects package.json, etc.)
+2. Recommends relevant agents from sources
+3. Offers to deploy
+
+---
+
+## Common Issues
+
+### "CAMI not responding"
+
+1. Verify plugin loaded:
+   ```bash
+   # Check Claude started with plugin flag
+   claude --plugin-dir ~/cami-plugin --debug
+   ```
+
+2. Check skill files exist:
+   ```bash
+   ls ~/cami-plugin/skills/
+   # Should show: cami/, create-agent/, create-project/, etc.
+   ```
+
+### "Workspace not found"
+
+CAMI creates workspace on first action. Try:
+```
+You: "Create an agent for testing"
+```
+
+### "Agent not deploying"
+
+Check project has `.claude/` directory:
+```bash
+mkdir -p ~/test-project/.claude/agents
+```
+
+Then retry deployment.
+
+### "Source clone failing"
+
+Verify git access:
+```bash
+git clone https://github.com/lando-labs/fullstack-guild.git /tmp/test-clone
+```
+
+If auth required, configure git credentials.
+
+---
+
+## Cleanup (Optional)
+
+To start fresh:
+
+```bash
+# Remove workspace
+rm -rf ~/cami-workspace
+
+# Remove deployed agents from test project
+rm -rf ~/test-project/.claude/agents/*
+
+# Remove plugin clone
+rm -rf ~/cami-plugin
+```
+
+---
+
+## Full Test Scenario
+
+**5-minute end-to-end test**:
+
+```bash
+# 1. Clone plugin
+git clone https://github.com/lando-labs/cami-plugin.git ~/cami-plugin
+
+# 2. Create test project
+mkdir -p ~/test-project && cd ~/test-project
+echo '{"name": "test", "dependencies": {"react": "^19.0.0"}}' > package.json
+
+# 3. Start Claude with plugin
+claude --plugin-dir ~/cami-plugin
+```
+
+In session:
+```
+You: "Hey CAMI"
+# → Sets up workspace
+
+You: "Create an agent for React state management"
+# → Creates custom agent
+
+You: "Deploy it here"
+# → Deploys to test-project
+
+You: "Add fullstack-guild"
+# → Adds official source
+
+You: "What's my roster?"
+# → Shows all deployed agents
+
+You: "Scout this project"
+# → Recommends additional agents based on React stack
+```
+
+---
+
+## Success Criteria
+
+All tests pass when:
+
+- [ ] CAMI responds with scout persona
+- [ ] Workspace created at `~/cami-workspace/`
+- [ ] Custom agent created in `sources/custom/`
+- [ ] Agent deployed to project `.claude/agents/`
+- [ ] Official source cloned to workspace
+- [ ] Roster shows deployed agents
+- [ ] Tech detection works on project
+
+---
+
+## Reporting Issues
+
+If tests fail, collect:
+
+1. Claude Code version: `claude --version`
+2. Plugin structure: `ls -la ~/cami-plugin/`
+3. Error messages from session
+4. Debug output: `claude --plugin-dir ~/cami-plugin --debug`
+
+Report at: https://github.com/lando-labs/cami-plugin/issues

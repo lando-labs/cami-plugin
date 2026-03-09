@@ -1,6 +1,6 @@
 {
   "name": "cami",
-  "description": "Claude Agent Management Interface - Scout, create, and deploy Claude Code agents across your projects",
+  "description": "Claude Capability Management Interface - Scout, create, and deploy Claude Code agents and skills across your projects",
   "version": "0.1.0",
   "author": {
     "name": "Lando Labs",

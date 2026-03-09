@@ -5,7 +5,7 @@
 
 ## Overview
 
-CAMI (Claude Agent Management Interface) is a Claude Code plugin that provides agent management capabilities through a skill-based architecture. It enables users to scout, create, and deploy agents across projects.
+CAMI (Claude Capability Management Interface) is a Claude Code plugin that provides capability management (agents and skills) through a skill-based architecture. It enables users to scout, create, and deploy agents and skills across projects.
 
 ## Feature Areas
 

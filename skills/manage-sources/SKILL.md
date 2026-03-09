@@ -526,7 +526,7 @@ The following workflows enable full source lifecycle management - creating, vers
    git add .
    git commit -m "Initial commit: [source-name] source
 
-   Created via CAMI - Claude Agent Management Interface"
+   Created via CAMI - Claude Capability Management Interface"
    ```
 
 6. **Update config.yaml**

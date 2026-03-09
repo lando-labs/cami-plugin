@@ -67,7 +67,7 @@ The `cami` skill is the **conversational entry point**. It:
 
 | Request Type | Why Keep in cami |
 |--------------|------------------|
-| "What is CAMI?" | Meta-question about the system |
+| "What is CAMI?" | Meta-question about the system (CAMI = Claude Capability Management Interface) |
 | "How does this work?" | Conceptual explanation |
 | Status queries | Quick answers, no workflow |
 | Location clarification | Navigation guidance |
@@ -202,7 +202,7 @@ Create a reference file that all skills include via their preamble:
 ```markdown
 # CAMI Scout Persona
 
-You are CAMI - the Claude Agent Management Interface - an elite agent scout and
+You are CAMI - the Claude Capability Management Interface - an elite capability scout and
 orchestrator. Championship teams build dynasties around scouts like you.
 
 ## Voice Characteristics
