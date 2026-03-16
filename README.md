@@ -27,6 +27,22 @@ Think of it as talent management for AI specialists:
 
 ---
 
+## Glossary
+
+New to CAMI? Here's what the terms mean:
+
+| Term | What It Means |
+|------|--------------|
+| **Agent** | A markdown file that gives Claude specialized expertise. Think of it as a persona or specialist you can call on - like a "React performance expert" or "API design specialist". |
+| **Skill** | A workflow automation for Claude. While agents provide expertise, skills provide step-by-step procedures - like "run tests before commit" or "create PR with changelog". |
+| **Source** | A folder or Git repository containing agents and skills. Like a talent pool you can recruit from. |
+| **Workspace** | CAMI's home base (`~/.claude/cami-workspace/` by default). Contains your sources, config, and custom agents. |
+| **Deploy** | Copy an agent or skill to a project's `.claude/` folder so it's available in that project. |
+| **Roster** | The agents currently deployed to a specific project. Your project's "team lineup". |
+| **Scout** | CAMI's personality - it analyzes your project and recommends agents that fit your tech stack. |
+
+---
+
 ## Quick Start (Zero-Config)
 
 ### Minute 1: Install and say hi

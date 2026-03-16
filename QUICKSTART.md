@@ -4,6 +4,21 @@ Testing installation and full workflow on a fresh machine.
 
 ---
 
+## Key Terms
+
+Before diving in, here's what the terminology means:
+
+- **Agent**: A markdown file giving Claude specialized expertise (like a "React expert")
+- **Skill**: A workflow automation (like "create PR with tests")
+- **Source**: A folder or Git repo containing agents/skills - your talent pool
+- **Workspace**: CAMI's home base where sources and config live (`~/.claude/cami-workspace/`)
+- **Deploy**: Copy an agent to a project so it's available there
+- **Roster**: The agents deployed to a specific project - your team lineup
+
+See the [README glossary](README.md#glossary) for detailed definitions.
+
+---
+
 ## Prerequisites
 
 1. **Claude Code CLI** installed and authenticated
