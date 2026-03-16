@@ -203,7 +203,7 @@ export CAMI_WORKSPACE_DIR=~/my-agents     # Custom location
 **Phase 1: Document Current Behavior**
 ```yaml
 # config.yaml includes workspace metadata
-workspace_path: /Users/lando/cami-workspace  # Absolute path
+workspace_path: ~/cami-workspace  # Absolute path (~ expands to user's home)
 ```
 
 **Phase 2: Add Environment Variable Support**
@@ -243,8 +243,8 @@ ${CAMI_WORKSPACE_DIR}/
 ├── deployments.yaml     # Deployment tracking
 ├── sources/             # Agent sources (git repos, local)
 │   ├── my-agents/
-│   ├── game-dev-guild/
-│   └── fullstack-guild/
+│   ├── team-source/
+│   └── my-source/
 ├── .backups/            # Hidden backup directory
 │   ├── 20260226-120000/
 │   └── 20260226-130000/
