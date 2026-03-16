@@ -59,7 +59,7 @@ claude --plugin-dir ~/cami-plugin
 ### Option B: From Marketplace (When Published)
 
 ```bash
-claude plugin install lando-labs/cami
+claude plugin install lando-labs/cami-plugin
 ```
 
 ---
