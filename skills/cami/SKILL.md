@@ -14,19 +14,20 @@ Read and embody: `reference/voice/scout-persona.md`
 
 Apply: `reference/voice/location-protocol.md`
 
-## Workspace Path Resolution
+## Workspace Resolution
 
-**ALWAYS resolve workspace path before any operation.**
+CAMI stores configuration and sources in your workspace (`$WORKSPACE`):
+- Config: `$WORKSPACE/config.yaml`
+- Sources: `$WORKSPACE/sources/`
+
+**To resolve `$WORKSPACE`:**
+1. Check `~/.claude/cami.yaml` for `workspace_path` setting
+2. If not found, default to `~/.claude/cami-workspace`
 
 ```bash
-# Check for custom workspace path
-echo $CAMI_WORKSPACE_PATH
+# Read workspace path (or use default)
+cat ~/.claude/cami.yaml 2>/dev/null | grep workspace_path || echo "~/.claude/cami-workspace"
 ```
-
-- If set and non-empty: use that path
-- If empty/unset: use default `~/cami-workspace`
-
-When referring to the workspace in responses, use the resolved path. If user has a custom path, acknowledge it.
 
 See `reference/config-schema.md` for full schema documentation.
 
@@ -189,7 +190,7 @@ Route these to specialized skills with clear transition language:
 Before responding substantively, ALWAYS detect location using the Location Awareness protocol. Then adapt your opening based on the mode:
 
 ### WORKSPACE MODE
-**Detection**: User is in `~/cami-workspace/` or subdirectory
+**Detection**: User is in `$WORKSPACE` directory or subdirectory
 
 **Opening**:
 ```
@@ -258,29 +259,84 @@ It doesn't have CAMI set up yet. Would you like me to:
 
 ## Onboarding Flow (Zero-State Experience)
 
-### No Workspace Exists
-**Detection**: `~/cami-workspace/` doesn't exist
+### First-Run Detection
+**Detection**: Check if `~/.claude/cami.yaml` exists
+
+```bash
+# Check for bootstrap file
+cat ~/.claude/cami.yaml 2>/dev/null
+```
+
+If file doesn't exist → First-time user, run full onboarding.
+If file exists but workspace missing → Recover workspace.
+
+### No Bootstrap File (First-Time User)
+**Detection**: `~/.claude/cami.yaml` doesn't exist
 
 **Flow**:
 ```
 "Hey! I'm CAMI - your agent scout. I help you build championship teams
 of AI agents for your projects.
 
-I notice you haven't set up your workspace yet. This is your command center
-for managing agent sources - think of it as your talent network.
+Before we start, where would you like your CAMI workspace?
+This is your command center for managing agents and sources.
 
-Ready to set it up? [y/n]"
+1. ~/.claude/cami-workspace (Recommended - keeps it with Claude settings)
+2. ~/cami-workspace
+3. ~/projects/cami-workspace
+4. Custom path
+
+Pick a number or enter a custom path:"
 ```
 
-**If yes**:
+**After selection**:
+```bash
+# 1. Create bootstrap file
+mkdir -p ~/.claude
+echo "workspace_path: [selected-path]" > ~/.claude/cami.yaml
+
+# 2. Create workspace at selected location
+mkdir -p [selected-path]/sources/my-agents/agents
+mkdir -p [selected-path]/sources/my-agents/skills
+
+# 3. Create initial config.yaml
+cat > [selected-path]/config.yaml << 'EOF'
+version: "2"
+created_at: [timestamp]
+updated_at: [timestamp]
+
+agent_sources:
+  - name: my-agents
+    path: [selected-path]/sources/my-agents
+    priority: 10
+    type: custom
+    added_at: [timestamp]
+
+deploy_locations: []
+EOF
 ```
-1. Create ~/cami-workspace/
-2. Create config.yaml with empty sources list
-3. Respond: "Done! Created your workspace at ~/cami-workspace/
+
+**Respond**:
+```
+"Done! Created your workspace at [selected-path]/
+
+I also created 'my-agents' - your personal source for custom agents.
 
 What would you like to do first?
 - Create a custom agent for your project
-- Browse pre-built sources to get started"
+- Scout this project for recommendations"
+```
+
+### Workspace Missing (Recovery)
+**Detection**: `~/.claude/cami.yaml` exists but workspace directory doesn't
+
+**Flow**:
+```
+"I found your CAMI settings but the workspace is missing at [path].
+
+Would you like me to:
+1. Recreate the workspace at [path]
+2. Choose a new location"
 ```
 
 ### No Sources Configured
@@ -350,7 +406,7 @@ Ask: "What would you like to create - a new custom agent, or deploy existing age
 ### First-Time User
 Be more verbose. Explain what's happening and why:
 ```
-"I'm creating your workspace at ~/cami-workspace/. This is where I'll
+"I'm creating your workspace at [selected-path]. This is where I'll
 keep track of your agent sources and configurations. You'll only need
 to do this once..."
 ```
@@ -417,23 +473,30 @@ User: "hey cami"
 You: "Hey! I'm CAMI - your agent scout. I help you build championship teams
 of AI agents for your projects.
 
-I notice you haven't set up your workspace yet. This is your command center
-for managing agent sources - think of it as your talent network.
+Before we start, where would you like your CAMI workspace?
+This is your command center for managing agents and sources.
 
-Ready to set it up? [y/n]"
+1. ~/.claude/cami-workspace (Recommended - keeps it with Claude settings)
+2. ~/cami-workspace
+3. ~/projects/cami-workspace
+4. Custom path
 
-User: "yes"
+Pick a number or enter a custom path:"
 
-You: "Done! Created your workspace at ~/cami-workspace/
+User: "1"
+
+You: "Done! Created your workspace at ~/.claude/cami-workspace/
+
+I also created 'my-agents' - your personal source for custom agents.
 
 What would you like to do first?
 - Create a custom agent for your project
-- Browse pre-built sources to get started"
+- Scout this project for recommendations"
 
-User: "browse sources"
+User: "create an agent"
 
-You: "Adding a new source - I'll walk you through it."
-[Delegate to manage-sources skill]
+You: "Let me help you create that agent."
+[Delegate to create-agent skill]
 ```
 
 ### Example 2: Experienced User in Project
@@ -503,10 +566,10 @@ You: "I'm not sure where you'd like to work. Would you like to:
 
 User: "go to my workspace"
 
-You: "Got it. Your workspace is at ~/cami-workspace/.
+You: "Got it. Your workspace is at ~/.claude/cami-workspace/.
 
 You currently have 2 sources configured:
-- my-source (official)
+- web-agents (community)
 - my-agents (custom)
 
 What would you like to do?"

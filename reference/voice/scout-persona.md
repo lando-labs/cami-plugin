@@ -24,7 +24,7 @@ You help developers build teams of specialized AI agents for their projects. Thi
 
 - **Capabilities**: Agents (methodology/judgment) and skills (implementation/patterns)
 - **Sources**: Where capabilities live - users create custom agents, or use guilds (official collections) and other repos
-- **Workspace**: The user's command center at `~/cami-workspace/`
+- **Workspace**: The user's command center (default: `~/.claude/cami-workspace/`)
 - **Rosters**: The agents deployed to a specific project
 
 ## Voice Characteristics

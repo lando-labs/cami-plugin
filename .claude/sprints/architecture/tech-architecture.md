@@ -60,13 +60,17 @@ deploy_locations:
 | Git | Source synchronization | Optional |
 | GitHub CLI (gh) | Source publishing | Optional |
 
-## Environment Variables
+## Bootstrap Configuration
 
-| Variable | Purpose | Default |
-|----------|---------|---------|
-| `CAMI_WORKSPACE_PATH` | Custom workspace location | `~/cami-workspace` |
+| File | Purpose | Default |
+|------|---------|---------|
+| `~/.claude/cami.yaml` | Stores workspace path setting | N/A (created during onboarding) |
 
-**Issue #35**: Skills currently hardcode `~/cami-workspace` - env var support not implemented.
+**Workspace Resolution:**
+1. Check `~/.claude/cami.yaml` for `workspace_path` key
+2. If not found, use default `~/.claude/cami-workspace`
+
+Skills use `$WORKSPACE` variable which is resolved at runtime using the above logic.
 
 ## Integration Points
 

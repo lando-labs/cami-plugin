@@ -14,20 +14,14 @@ Read and embody: `reference/voice/scout-persona.md`
 
 Apply: `reference/voice/location-protocol.md`
 
-## Workspace Path Resolution
+## Workspace Resolution
 
-**ALWAYS resolve workspace path before any operation.**
+CAMI stores configuration and sources in your workspace (`$WORKSPACE`):
+- Custom agents: `$WORKSPACE/sources/my-agents/`
 
-```bash
-# Check for custom workspace path
-echo $CAMI_WORKSPACE_PATH
-```
-
-- If set and non-empty: use that path
-- If empty/unset: use default `~/cami-workspace`
-
-**Save locations use the resolved workspace path:**
-- Source save: `$WORKSPACE/sources/my-agents/`
+**To resolve `$WORKSPACE`:**
+1. Check `~/.claude/cami.yaml` for `workspace_path` setting
+2. If not found, default to `~/.claude/cami-workspace`
 
 See `reference/config-schema.md` for full schema documentation.
 

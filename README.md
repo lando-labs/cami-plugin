@@ -27,6 +27,22 @@ Think of it as talent management for AI specialists:
 
 ---
 
+## Glossary
+
+New to CAMI? Here's what the terms mean:
+
+| Term | What It Means |
+|------|--------------|
+| **Agent** | A markdown file that gives Claude specialized expertise. Think of it as a persona or specialist you can call on - like a "React performance expert" or "API design specialist". |
+| **Skill** | A workflow automation for Claude. While agents provide expertise, skills provide step-by-step procedures - like "run tests before commit" or "create PR with changelog". |
+| **Source** | A folder or Git repository containing agents and skills. Like a talent pool you can recruit from. |
+| **Workspace** | CAMI's home base (`~/.claude/cami-workspace/` by default). Contains your sources, config, and custom agents. |
+| **Deploy** | Copy an agent or skill to a project's `.claude/` folder so it's available in that project. |
+| **Roster** | The agents currently deployed to a specific project. Your project's "team lineup". |
+| **Scout** | CAMI's personality - it analyzes your project and recommends agents that fit your tech stack. |
+
+---
+
 ## Quick Start (Zero-Config)
 
 ### Minute 1: Install and say hi
@@ -67,7 +83,7 @@ CAMI: "Perfect! Let me create a custom agent for you.
 
 You: "Yes"
 
-CAMI: "Creating your workspace at ~/cami-workspace/
+CAMI: "Creating your workspace at ~/.claude/cami-workspace/
       Creating state-management-specialist in sources/my-agents/... Done!
 
       Ready to deploy it to this project?"
@@ -78,7 +94,7 @@ CAMI: "Creating your workspace at ~/cami-workspace/
 ```
 You: "Yes. Scout this project."
 
-CAMI: "Done! Created your workspace at ~/cami-workspace/
+CAMI: "Done! Created your workspace at ~/.claude/cami-workspace/
 
       Looking at your React/TypeScript project... found package.json with React 19.
 
@@ -191,7 +207,7 @@ You make the call. CAMI executes.
 The first time you create an agent, add a source, or deploy an agent, CAMI creates:
 
 ```
-~/cami-workspace/
+~/.claude/cami-workspace/
 ├── config.yaml      # Auto-generated tracking
 └── sources/
     └── my-agents/               # Your custom agents (priority 10)
@@ -292,10 +308,10 @@ CAMI: "Checking all deployed agents...
 
 ### Workspace Structure
 
-CAMI stores everything in `~/cami-workspace/`:
+CAMI stores everything in `~/.claude/cami-workspace/`:
 
 ```
-~/cami-workspace/
+~/.claude/cami-workspace/
 ├── config.yaml              # Tracks sources and deployments
 ├── deployments.yaml         # Per-project deployment tracking
 └── sources/
@@ -313,16 +329,6 @@ CAMI stores everything in `~/cami-workspace/`:
             └── *.md
 ```
 
-### Custom Workspace Location
-
-Override the default location:
-
-```bash
-export CAMI_WORKSPACE_PATH=~/my-custom-workspace
-```
-
-CAMI will use this path instead of `~/cami-workspace/`.
-
 ### config.yaml Schema
 
 Auto-generated, but you can edit manually if needed:
@@ -334,12 +340,12 @@ updated_at: 2026-02-25T10:45:00Z
 
 sources:
   - name: my-agents
-    path: ~/cami-workspace/sources/my-agents
+    path: ~/.claude/cami-workspace/sources/my-agents
     priority: 10
     added_at: 2026-02-25T10:30:00Z
 
   - name: team-agents
-    path: ~/cami-workspace/sources/team-agents
+    path: ~/.claude/cami-workspace/sources/team-agents
     priority: 50
     added_at: 2026-02-25T10:35:00Z
     git:
@@ -388,7 +394,7 @@ claude plugin install lando-labs/cami
 Check if the workspace exists:
 
 ```bash
-ls -la ~/cami-workspace/
+ls -la ~/.claude/cami-workspace/
 ```
 
 If it doesn't exist, CAMI will create it on your first action. Try:
@@ -409,21 +415,6 @@ CAMI: "You have 2 sources configured:
 ```
 
 If the source you need isn't listed, add it.
-
-### "Custom workspace path not working"
-
-Make sure the environment variable is set in your shell config:
-
-```bash
-# Add to ~/.bashrc or ~/.zshrc
-export CAMI_WORKSPACE_PATH=~/my-custom-workspace
-```
-
-Restart your shell or source the config:
-
-```bash
-source ~/.zshrc
-```
 
 ---
 

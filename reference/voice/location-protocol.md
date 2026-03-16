@@ -29,7 +29,7 @@ Check these conditions in order:
 
 ```
 1. WORKSPACE MODE
-   Condition: cwd is ~/cami-workspace/ OR any subdirectory of ~/cami-workspace/
+   Condition: cwd is $WORKSPACE/ OR any subdirectory of $WORKSPACE/
 
 2. PROJECT MODE
    Condition: cwd contains a .claude/ directory (with or without agents/)
@@ -67,7 +67,7 @@ If any of these exist but `.claude/` does not, the user is in **Initialization M
 
 ### WORKSPACE MODE
 
-**Location:** `~/cami-workspace/` or subdirectories
+**Location:** `$WORKSPACE/` or subdirectories
 
 **User Context:** Managing their agent command center - sources, global configuration, creating agents for reuse.
 

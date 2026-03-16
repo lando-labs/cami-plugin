@@ -14,21 +14,15 @@ Read and embody: `reference/voice/scout-persona.md`
 
 Apply: `reference/voice/location-protocol.md`
 
-## Workspace Path Resolution
+## Workspace Resolution
 
-**ALWAYS resolve workspace path before any operation.**
-
-```bash
-# Check for custom workspace path
-echo $CAMI_WORKSPACE_PATH
-```
-
-- If set and non-empty: use that path
-- If empty/unset: use default `~/cami-workspace`
-
-**All paths in this skill should use the resolved workspace path:**
-- Config: `$WORKSPACE/config.yaml` (NOT config.yaml)
+CAMI stores configuration and sources in your workspace (`$WORKSPACE`):
+- Config: `$WORKSPACE/config.yaml`
 - Sources: `$WORKSPACE/sources/`
+
+**To resolve `$WORKSPACE`:**
+1. Check `~/.claude/cami.yaml` for `workspace_path` setting
+2. If not found, default to `~/.claude/cami-workspace`
 
 See `reference/config-schema.md` for full schema documentation.
 
@@ -160,7 +154,7 @@ Your workspace is at ~/cami-workspace/ - want me to show you what's there?"
    - Report any issues found
 
 5. **Update config.yaml**
-   - Resolve workspace path (check `$CAMI_WORKSPACE_PATH` first)
+   - Use workspace path (`~/cami-workspace`)
    - Read `$WORKSPACE/config.yaml`
    - Add source entry to `agent_sources`:
    ```yaml
@@ -421,12 +415,7 @@ The following workflows enable full source lifecycle management - creating, vers
    (Use kebab-case, e.g., 'data-ml-guild', 'my-team-agents')"
    ```
 
-2. **Resolve workspace path**
-   ```bash
-   WORKSPACE="${CAMI_WORKSPACE_PATH:-$HOME/cami-workspace}"
-   ```
-
-3. **Create directory structure**
+2. **Create directory structure**
    ```bash
    mkdir -p $WORKSPACE/sources/<name>
    mkdir -p $WORKSPACE/sources/<name>/agents

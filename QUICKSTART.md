@@ -1,6 +1,23 @@
 # CAMI Plugin - Quickstart Guide
 
-Testing installation and full workflow on a fresh machine.
+CAMI helps you create and manage AI specialists (called **agents**) that assist with specific tasks in your coding projects. Instead of manually setting up Claude for each project, CAMI scouts your codebase, recommends relevant specialists, and deploys them with a single command.
+
+**This guide walks through installation and verification** on a fresh machine.
+
+---
+
+## Key Terms
+
+Before diving in, here's what the terminology means:
+
+- **Agent**: A markdown file giving Claude specialized expertise (like a "React expert")
+- **Skill**: A workflow automation (like "create PR with tests")
+- **Source**: A folder or Git repo containing agents/skills - your talent pool
+- **Workspace**: CAMI's home base where sources and config live (`~/.claude/cami-workspace/`)
+- **Deploy**: Copy an agent to a project so it's available there
+- **Roster**: The agents deployed to a specific project - your team lineup
+
+See the [README glossary](README.md#glossary) for detailed definitions.
 
 ---
 
@@ -42,7 +59,7 @@ claude --plugin-dir ~/cami-plugin
 ### Option B: From Marketplace (When Published)
 
 ```bash
-claude plugin install lando-labs/cami
+claude plugin install lando-labs/cami-plugin
 ```
 
 ---
@@ -74,13 +91,13 @@ You: "Hey CAMI"
 You: "Yes, set up my workspace"
 ```
 
-**Expected**: Creates `~/cami-workspace/` with:
+**Expected**: Creates `~/.claude/cami-workspace/` with:
 - `config.json`
 - `sources/` directory
 
 **Verify**:
 ```bash
-ls -la ~/cami-workspace/
+ls -la ~/.claude/cami-workspace/
 ```
 
 ---
@@ -93,12 +110,12 @@ You: "Create an agent for testing React components"
 
 **Expected**:
 1. CAMI asks clarifying questions about focus areas
-2. Creates agent in `~/cami-workspace/sources/custom/`
+2. Creates agent in `~/.claude/cami-workspace/sources/custom/`
 3. Offers to deploy
 
 **Verify**:
 ```bash
-ls ~/cami-workspace/sources/custom/
+ls ~/.claude/cami-workspace/sources/custom/
 # Should show: testing-react-components.md (or similar)
 ```
 
@@ -142,7 +159,7 @@ You: "Add https://github.com/example/web-agents as a source"
 
 **Verify**:
 ```bash
-ls ~/cami-workspace/sources/
+ls ~/.claude/cami-workspace/sources/
 # Should show: my-agents/, web-agents/
 ```
 
@@ -220,7 +237,7 @@ To start fresh:
 
 ```bash
 # Remove workspace
-rm -rf ~/cami-workspace
+rm -rf ~/.claude/cami-workspace
 
 # Remove deployed agents from test project
 rm -rf ~/test-project/.claude/agents/*
@@ -275,7 +292,7 @@ You: "Scout this project"
 All tests pass when:
 
 - [ ] CAMI responds with scout persona
-- [ ] Workspace created at `~/cami-workspace/`
+- [ ] Workspace created at `~/.claude/cami-workspace/`
 - [ ] Custom agent created in `sources/custom/`
 - [ ] Agent deployed to project `.claude/agents/`
 - [ ] Source can be added from Git URL
