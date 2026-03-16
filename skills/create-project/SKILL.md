@@ -527,10 +527,10 @@ For each skill:
 ```
 "Deploying your roster...
 
-✓ frontend-methodology (v1.2.0) - from fullstack-guild source
-✓ backend-methodology (v1.2.0) - from fullstack-guild source
-✓ database-methodology (v1.0.0) - from fullstack-guild source
-✓ react-tailwind skill (v1.0.0) - from fullstack-guild source
+✓ frontend-methodology (v1.2.0) - from my-source source
+✓ backend-methodology (v1.2.0) - from my-source source
+✓ database-methodology (v1.0.0) - from my-source source
+✓ react-tailwind skill (v1.0.0) - from my-source source
 
 All set! Your roster is deployed."
 ```
@@ -573,8 +573,8 @@ last_scanned: 2026-02-25T10:30:00Z
 agents:
   - name: frontend-methodology
     version: 1.2.0
-    source: fullstack-guild
-    source_path: ~/cami-workspace/sources/fullstack-guild/agents/frontend-methodology.md
+    source: my-source
+    source_path: ~/cami-workspace/sources/my-source/agents/frontend-methodology.md
     priority: 40
     deployed_at: 2026-02-25T10:30:00Z
     content_hash: sha256:abc123def...
@@ -584,8 +584,8 @@ agents:
 
   - name: backend-methodology
     version: 1.2.0
-    source: fullstack-guild
-    source_path: ~/cami-workspace/sources/fullstack-guild/agents/backend-methodology.md
+    source: my-source
+    source_path: ~/cami-workspace/sources/my-source/agents/backend-methodology.md
     priority: 40
     deployed_at: 2026-02-25T10:32:00Z
     content_hash: sha256:ghi789jkl...
@@ -595,8 +595,8 @@ agents:
 
   - name: database-methodology
     version: 1.0.0
-    source: fullstack-guild
-    source_path: ~/cami-workspace/sources/fullstack-guild/agents/database-methodology.md
+    source: my-source
+    source_path: ~/cami-workspace/sources/my-source/agents/database-methodology.md
     priority: 40
     deployed_at: 2026-02-25T10:34:00Z
     content_hash: sha256:mno345pqr...
@@ -607,8 +607,8 @@ agents:
 skills:
   - name: react-tailwind
     version: 1.0.0
-    source: fullstack-guild
-    source_path: ~/cami-workspace/sources/fullstack-guild/skills/react-tailwind/SKILL.md
+    source: my-source
+    source_path: ~/cami-workspace/sources/my-source/skills/react-tailwind/SKILL.md
     priority: 40
     deployed_at: 2026-02-25T10:36:00Z
     content_hash: sha256:stu901vwx...
@@ -618,8 +618,8 @@ skills:
 
   - name: express-api-patterns
     version: 1.0.0
-    source: fullstack-guild
-    source_path: ~/cami-workspace/sources/fullstack-guild/skills/express-api-patterns/SKILL.md
+    source: my-source
+    source_path: ~/cami-workspace/sources/my-source/skills/express-api-patterns/SKILL.md
     priority: 40
     deployed_at: 2026-02-25T10:38:00Z
     content_hash: sha256:yza567bcd...
@@ -938,7 +938,7 @@ User: "Just performance specialist"
 
 You: "Got it. Adding performance-specialist to your roster...
 
-✓ performance-specialist (v1.1.0) - from fullstack-guild
+✓ performance-specialist (v1.1.0) - from my-source
 
 Updated roster:
 - frontend-methodology (v1.0.0)
@@ -1058,7 +1058,7 @@ If workspace exists but no sources:
 
 Want me to:
 1. Create custom agents tailored to your project
-2. Add official sources (fullstack-guild, game-dev-guild, etc.)
+2. Browse community sources from the marketplace
 3. Both - create custom ones and add sources for later
 
 What sounds good?"

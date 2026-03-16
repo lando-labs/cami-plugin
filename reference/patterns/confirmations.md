@@ -300,7 +300,7 @@ if (hasLocalChanges) {
 
 **Confirmation Message:**
 ```
-The source 'game-dev-guild' has uncommitted local changes:
+The source 'my-source' has uncommitted local changes:
 
 Modified:
   agents/phaser-expert.md
@@ -344,11 +344,11 @@ if (similar) {
 ```
 A similar source already exists:
 
-Existing: game-dev-guild
-  URL: https://github.com/lando-labs/game-dev-guild
+Existing: my-source
+  URL: https://github.com/lando-labs/my-source
 
 New: game-dev-agents
-  URL: https://github.com/lando-labs/game-dev-guild
+  URL: https://github.com/lando-labs/my-source
 
 These may be duplicates. Continue? (y/n)
 ```
@@ -617,7 +617,7 @@ Continue? (y/n)
 ### Example 4: Local Changes Detection
 
 ```
-The source 'game-dev-guild' has uncommitted changes:
+The source 'my-source' has uncommitted changes:
 
 Modified:
   agents/phaser-expert.md

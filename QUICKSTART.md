@@ -132,7 +132,7 @@ ls ~/test-project/.claude/agents/
 ### Test 5: Source Addition
 
 ```
-You: "Add the fullstack-guild source"
+You: "Add https://github.com/example/web-agents as a source"
 ```
 
 **Expected**:
@@ -143,7 +143,7 @@ You: "Add the fullstack-guild source"
 **Verify**:
 ```bash
 ls ~/cami-workspace/sources/
-# Should show: custom/, fullstack-guild/
+# Should show: my-agents/, web-agents/
 ```
 
 ---
@@ -207,7 +207,7 @@ Then retry deployment.
 
 Verify git access:
 ```bash
-git clone https://github.com/lando-labs/fullstack-guild.git /tmp/test-clone
+git clone https://github.com/example/test-repo.git /tmp/test-clone
 ```
 
 If auth required, configure git credentials.
@@ -258,8 +258,8 @@ You: "Create an agent for React state management"
 You: "Deploy it here"
 # → Deploys to test-project
 
-You: "Add fullstack-guild"
-# → Adds official source
+You: "List my sources"
+# → Shows available sources
 
 You: "What's my roster?"
 # → Shows all deployed agents
@@ -278,7 +278,7 @@ All tests pass when:
 - [ ] Workspace created at `~/cami-workspace/`
 - [ ] Custom agent created in `sources/custom/`
 - [ ] Agent deployed to project `.claude/agents/`
-- [ ] Official source cloned to workspace
+- [ ] Source can be added from Git URL
 - [ ] Roster shows deployed agents
 - [ ] Tech detection works on project
 

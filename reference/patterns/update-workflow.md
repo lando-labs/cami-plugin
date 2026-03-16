@@ -37,9 +37,9 @@ This is typically orchestrated by the **Scout** agent, who guides the user throu
 **Output**:
 ```
 Updated sources:
-- fullstack-guild: 3 new commits, agent-architect updated to v2.1.0
-- game-dev-guild: No changes
-- content-guild: New agent added (seo-optimizer v1.0.0)
+- my-source: 3 new commits, agent-architect updated to v2.1.0
+- team-source: No changes
+- custom-source: New agent added (seo-optimizer v1.0.0)
 ```
 
 **Error Handling**:
@@ -73,7 +73,7 @@ Updated sources:
     {
       "name": "agent-architect",
       "version": "2.0.0",
-      "source": "fullstack-guild",
+      "source": "my-source",
       "path": ".claude/agents/agent-architect.md"
     }
   ],
@@ -339,7 +339,7 @@ Scout: "I'll check for updates. First, let me pull the latest from your sources.
 [Invokes: manage-sources update]
 
 Scout: "Sources updated:
-- fullstack-guild: agent-architect updated to v2.1.0
+- my-source: agent-architect updated to v2.1.0
 - cami: No changes
 
 Now scanning your deployed capabilities..."
@@ -386,7 +386,7 @@ Update complete! Your capabilities are now current."
 
 **Handling**:
 ```
-Scout: "Unable to update fullstack-guild (network error).
+Scout: "Unable to update my-source (network error).
 Proceeding with other sources...
 
 Updates based on available sources:
@@ -458,7 +458,7 @@ Scout: "Update results:
 2 of 3 updates completed.
 
 Failed updates require manual attention:
-- Check fullstack-guild/skills/manage-capabilities/ exists
+- Check my-source/skills/manage-capabilities/ exists
 - Run 'manage-sources update' to refresh sources"
 ```
 

@@ -91,7 +91,7 @@ Config file is created when the user:
    - Updates: `deployments.yaml` for the target project
 
 3. **Adds First Source**:
-   - Trigger: "add the fullstack-guild"
+   - Trigger: "add the my-source"
    - Creates: Config if missing, clones source to `sources/` directory
    - Initial state: One source entry
 
@@ -117,13 +117,13 @@ agent_sources:
     git:
       enabled: false
 
-  - name: fullstack-guild
+  - name: my-source
     type: local
-    path: ~/cami-workspace/sources/fullstack-guild
+    path: ~/cami-workspace/sources/my-source
     priority: 40
     git:
       enabled: true
-      url: https://github.com/lando-labs/fullstack-guild.git
+      url: https://github.com/lando-labs/my-source.git
 
 deploy_locations:
   - name: my-app
@@ -193,9 +193,9 @@ agent_sources:
     priority: 40
     path: ~/cami-workspace/sources/team-guild
 
-  - name: fullstack-guild
+  - name: my-source
     priority: 100
-    path: ~/cami-workspace/sources/fullstack-guild
+    path: ~/cami-workspace/sources/my-source
 ```
 
 **Agent Resolution**:
@@ -203,13 +203,13 @@ agent_sources:
 If `frontend-methodology.md` exists in all three sources:
 1. CAMI uses `my-agents/frontend-methodology.md` (priority 10 - user's own agents win)
 2. If my-agents doesn't have it, uses `team-guild/frontend-methodology.md` (priority 40)
-3. If neither have it, uses `fullstack-guild/frontend-methodology.md` (priority 100)
+3. If neither have it, uses `my-source/frontend-methodology.md` (priority 100)
 
 **User Control**:
 
 Users can override priority when adding sources:
 ```
-User: "Add the fullstack-guild with priority 20"
+User: "Add the my-source with priority 20"
 Claude: *Adds source with priority 20 instead of default 100*
 ```
 
@@ -228,7 +228,7 @@ CAMI auto-creates this structure when needed:
     │   ├── CLAUDE.md                # Source description
     │   ├── my-agent.md              # User-created agents
     │   └── ...
-    ├── fullstack-guild/             # Git cloned source
+    ├── my-source/             # Git cloned source
     │   ├── .git/
     │   ├── CLAUDE.md
     │   ├── agents/
@@ -236,7 +236,7 @@ CAMI auto-creates this structure when needed:
     │   │   └── backend-methodology.md
     │   └── skills/
     │       └── react-tailwind/
-    └── game-dev-guild/              # Another git source
+    └── team-source/              # Another git source
         └── ...
 ```
 
@@ -431,8 +431,8 @@ deployments:
     agents:
       - name: frontend-methodology
         version: 1.2.0
-        source: fullstack-guild
-        source_path: ~/cami-workspace/sources/fullstack-guild/agents/frontend-methodology.md
+        source: my-source
+        source_path: ~/cami-workspace/sources/my-source/agents/frontend-methodology.md
         priority: 40
         deployed_at: 2026-01-28T22:17:31.633506-06:00
         content_hash: sha256:abc123def456...
@@ -464,8 +464,8 @@ last_scanned: 2026-01-29T22:44:47.131615-06:00
 agents:
   - name: frontend-methodology
     version: 1.2.0
-    source: fullstack-guild
-    source_path: ~/cami-workspace/sources/fullstack-guild/agents/frontend-methodology.md
+    source: my-source
+    source_path: ~/cami-workspace/sources/my-source/agents/frontend-methodology.md
     priority: 40
     deployed_at: 2026-01-28T22:17:31.633506-06:00
     content_hash: sha256:abc123def456...
@@ -475,8 +475,8 @@ agents:
 
   - name: backend-methodology
     version: 2.0.0
-    source: fullstack-guild
-    source_path: ~/cami-workspace/sources/fullstack-guild/agents/backend-methodology.md
+    source: my-source
+    source_path: ~/cami-workspace/sources/my-source/agents/backend-methodology.md
     priority: 40
     deployed_at: 2026-01-28T22:20:00.000000-06:00
     content_hash: sha256:ghi789jkl012...
@@ -487,8 +487,8 @@ agents:
 skills:
   - name: react-tailwind
     version: 2.1.0
-    source: fullstack-guild
-    source_path: ~/cami-workspace/sources/fullstack-guild/skills/react-tailwind/SKILL.md
+    source: my-source
+    source_path: ~/cami-workspace/sources/my-source/skills/react-tailwind/SKILL.md
     priority: 40
     deployed_at: 2026-01-28T22:25:00.000000-06:00
     content_hash: sha256:mno456pqr789...
@@ -606,7 +606,7 @@ capabilities:
   agents:
     - name: frontend-methodology
       version: 1.2.0
-      source: fullstack-guild
+      source: my-source
       deployed_at: 2026-02-25T10:30:00Z
       content_hash: sha256:abc123...
 ```
@@ -621,8 +621,8 @@ last_scanned: 2026-02-26T15:00:00Z
 agents:
   - name: frontend-methodology
     version: 1.2.0
-    source: fullstack-guild
-    source_path: ~/cami-workspace/sources/fullstack-guild/agents/frontend-methodology.md
+    source: my-source
+    source_path: ~/cami-workspace/sources/my-source/agents/frontend-methodology.md
     priority: 40
     deployed_at: 2026-02-25T10:30:00Z
     content_hash: sha256:abc123...
@@ -704,7 +704,7 @@ version: 1  # Current version
 
 1. **User Agents Win**:
    - `my-agents` (priority 10) has `frontend-methodology`
-   - `fullstack-guild` (priority 100) has `frontend-methodology`
+   - `my-source` (priority 100) has `frontend-methodology`
    - CAMI uses `my-agents` version (lower priority wins)
 
 2. **Source Not Found**:
@@ -774,13 +774,13 @@ install_timestamp: 2026-02-25T10:30:00Z
 setup_complete: true
 
 agent_sources:
-  - name: fullstack-guild
+  - name: my-source
     type: local
-    path: ~/cami-workspace/sources/fullstack-guild
+    path: ~/cami-workspace/sources/my-source
     priority: 100
     git:
       enabled: true
-      url: https://github.com/lando-labs/fullstack-guild.git
+      url: https://github.com/lando-labs/my-source.git
 
 deploy_locations:
   - name: my-web-app
@@ -803,21 +803,21 @@ agent_sources:
     git:
       enabled: false
 
-  - name: fullstack-guild
+  - name: my-source
     type: local
-    path: ~/cami-workspace/sources/fullstack-guild
+    path: ~/cami-workspace/sources/my-source
     priority: 100
     git:
       enabled: true
-      url: https://github.com/lando-labs/fullstack-guild.git
+      url: https://github.com/lando-labs/my-source.git
 
-  - name: game-dev-guild
+  - name: team-source
     type: local
-    path: ~/cami-workspace/sources/game-dev-guild
+    path: ~/cami-workspace/sources/team-source
     priority: 100
     git:
       enabled: true
-      url: https://github.com/lando-labs/game-dev-guild.git
+      url: https://github.com/lando-labs/team-source.git
 
 deploy_locations:
   - name: web-app
@@ -839,8 +839,8 @@ last_scanned: 2026-02-26T15:00:00Z
 agents:
   - name: frontend-methodology
     version: 1.2.0
-    source: fullstack-guild
-    source_path: ~/cami-workspace/sources/fullstack-guild/agents/frontend-methodology.md
+    source: my-source
+    source_path: ~/cami-workspace/sources/my-source/agents/frontend-methodology.md
     priority: 40
     deployed_at: 2026-02-25T10:30:00Z
     content_hash: sha256:abc123def456789...
@@ -850,8 +850,8 @@ agents:
 
   - name: backend-methodology
     version: 2.0.0
-    source: fullstack-guild
-    source_path: ~/cami-workspace/sources/fullstack-guild/agents/backend-methodology.md
+    source: my-source
+    source_path: ~/cami-workspace/sources/my-source/agents/backend-methodology.md
     priority: 40
     deployed_at: 2026-02-25T10:32:00Z
     content_hash: sha256:def789ghi012345...
@@ -862,8 +862,8 @@ agents:
 skills:
   - name: react-tailwind
     version: 2.1.0
-    source: fullstack-guild
-    source_path: ~/cami-workspace/sources/fullstack-guild/skills/react-tailwind/SKILL.md
+    source: my-source
+    source_path: ~/cami-workspace/sources/my-source/skills/react-tailwind/SKILL.md
     priority: 40
     deployed_at: 2026-02-25T10:35:00Z
     content_hash: sha256:xyz789abc123456...

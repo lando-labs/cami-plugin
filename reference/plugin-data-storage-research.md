@@ -243,8 +243,8 @@ ${CAMI_WORKSPACE_DIR}/
 ├── deployments.yaml     # Deployment tracking
 ├── sources/             # Agent sources (git repos, local)
 │   ├── my-agents/
-│   ├── game-dev-guild/
-│   └── fullstack-guild/
+│   ├── team-source/
+│   └── my-source/
 ├── .backups/            # Hidden backup directory
 │   ├── 20260226-120000/
 │   └── 20260226-130000/

@@ -1,43 +1,35 @@
-# Official Sources Registry
+# Sources Overview
 
-> Reference for official Lando Labs sources. Use these as templates or starting points when creating your own agents.
+> How to add and manage capability sources in CAMI.
 
-**Purpose**: Official sources provide pre-built agents you can use as-is or as inspiration for custom agents. Most users create custom agents tailored to their workflow, using official sources as reference.
-
----
-
-## Available Sources
-
-| Source | Repository | Focus | Agents |
-|--------|------------|-------|--------|
-| fullstack-guild | `github.com/lando-labs/fullstack-guild` | Web development (MERN stack) | frontend, backend, database, api |
-| content-guild | `github.com/lando-labs/content-guild` | Writing & marketing | content-strategist, copywriter, seo |
-| game-dev-guild | `github.com/lando-labs/game-dev-guild` | Game development (Phaser 3) | game-core, ui, audio |
+**Purpose**: Sources are repositories of agents and skills. You can create your own custom sources or add sources from the community.
 
 ---
 
-## Adding an Official Source
+## Creating Your Own Source
+
+The recommended approach is to create custom agents tailored to your workflow:
 
 ```
-"Add the fullstack-guild as a source"
+"Create a custom agent for React development"
 ```
 
-This clones the repository to your workspace's `sources/` directory.
+CAMI will guide you through creating an agent specific to your needs.
 
----
+### Local Sources
 
-## Using as Reference
+Create a local source directory in your workspace:
 
-You don't need to add a source to learn from it. Browse the repositories directly:
-- [fullstack-guild](https://github.com/lando-labs/fullstack-guild)
-- [content-guild](https://github.com/lando-labs/content-guild)
-- [game-dev-guild](https://github.com/lando-labs/game-dev-guild)
+```
+~/cami-workspace/sources/my-agents/
+├── agents/
+│   └── my-frontend.md
+└── skills/
+    └── my-patterns/
+        └── SKILL.md
+```
 
-Then create your own agents inspired by their patterns.
-
----
-
-## Creating Custom Sources
+### Git-Based Sources
 
 Any git repository can be a source:
 
@@ -45,20 +37,64 @@ Any git repository can be a source:
 "Add https://github.com/myorg/my-agents as a source"
 ```
 
-Custom sources work exactly like official ones.
+This clones the repository to your workspace's `sources/` directory.
 
 ---
 
-## When to Use Official vs Custom
+## Adding a Source
+
+```
+"Add https://github.com/example/agents as a source"
+```
+
+Or for local directories:
+
+```
+"Add ~/path/to/my-agents as a source"
+```
+
+---
+
+## Source Structure
+
+A valid source follows this structure:
+
+```
+my-source/
+├── agents/           # Agent definitions
+│   ├── agent-one.md
+│   └── agent-two.md
+├── skills/           # Skill definitions
+│   └── skill-name/
+│       └── SKILL.md
+└── README.md         # Optional: source documentation
+```
+
+---
+
+## Community Sources
+
+Community sources and official Lando Labs sources are available in the [CAMI Marketplace](https://cami.lando.dev/marketplace).
+
+Browse the marketplace to discover pre-built agents for:
+- Web development
+- Game development
+- Content creation
+- DevOps
+- And more
+
+---
+
+## When to Use Custom vs Community Sources
 
 | Scenario | Recommendation |
 |----------|----------------|
-| Learning CAMI patterns | Browse official sources as examples |
-| Standard web/game/content project | Start with official, customize later |
+| Learning CAMI patterns | Browse community sources as examples |
+| Standard projects | Browse marketplace, customize as needed |
 | Unique workflow or domain | Create custom agents from scratch |
 | Team-specific conventions | Create custom source for your org |
 
-**Most users**: Create 2-3 custom agents tailored to their project, optionally adding an official source for reference.
+**Most users**: Create 2-3 custom agents tailored to their project, optionally adding community sources for reference.
 
 ---
 

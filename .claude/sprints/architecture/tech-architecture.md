@@ -88,7 +88,7 @@ deploy_locations:
     │  ├── deployments.yaml                     │
     │  └── sources/                             │
     │      ├── my-agents/                       │
-    │      └── fullstack-guild/                 │
+    │      └── my-source/                 │
     └───────────────────────────────────────────┘
 ```
 

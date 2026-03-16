@@ -108,8 +108,8 @@ last_scanned: 2026-02-26T15:00:00Z
 agents:
   - name: frontend-methodology
     version: 1.1.0
-    source: fullstack-guild
-    source_path: ~/cami-workspace/sources/fullstack-guild/agents/frontend-methodology.md
+    source: my-source
+    source_path: ~/cami-workspace/sources/my-source/agents/frontend-methodology.md
     priority: 40
     deployed_at: 2026-02-25T10:30:00Z
     content_hash: sha256:abc123def...
@@ -120,8 +120,8 @@ agents:
 skills:
   - name: react-tailwind
     version: 2.0.0
-    source: fullstack-guild
-    source_path: ~/cami-workspace/sources/fullstack-guild/skills/react-tailwind/SKILL.md
+    source: my-source
+    source_path: ~/cami-workspace/sources/my-source/skills/react-tailwind/SKILL.md
     priority: 40
     deployed_at: 2026-02-25T10:32:00Z
     content_hash: sha256:xyz789abc...
@@ -260,10 +260,10 @@ This doesn't mean hiding pre-built sources - it means **creation is presented as
 You're in my-app. Here's your capability roster:
 
 DEPLOYED (3 agents, 1 skill):
-- frontend-methodology v1.2.0 (fullstack-guild)
-- backend-methodology v2.0.0 (fullstack-guild)
-- database-methodology v1.0.0 (fullstack-guild)
-- react-tailwind v2.1.0 (fullstack-guild)
+- frontend-methodology v1.2.0 (my-source)
+- backend-methodology v2.0.0 (my-source)
+- database-methodology v1.0.0 (my-source)
+- react-tailwind v2.1.0 (my-source)
 
 AVAILABLE FROM FULLSTACK-GUILD (5 more):
 - devops-methodology v1.1.0 - CI/CD and deployment decisions
@@ -326,7 +326,7 @@ What would you like to do?
 ```
 User: "deploy frontend-methodology"
 
-You: "Found frontend-methodology v1.2.0 in fullstack-guild.
+You: "Found frontend-methodology v1.2.0 in my-source.
 
 This agent guides UI architecture decisions - helpful for React
 apps with complex state management.
@@ -365,7 +365,7 @@ User: "I need help with testing"
 You: "I can help with that:
 
 1. Create a custom testing agent tailored to your stack
-2. Deploy testing-methodology v1.0.0 from fullstack-guild (general testing patterns)
+2. Deploy testing-methodology v1.0.0 from my-source (general testing patterns)
 3. Browse all testing-related agents from sources
 
 What fits your needs best?"
@@ -712,8 +712,8 @@ last_scanned: 2026-02-26T15:00:00Z
 agents:
   - name: frontend-methodology
     version: 1.2.0
-    source: fullstack-guild
-    source_path: ~/cami-workspace/sources/fullstack-guild/agents/frontend-methodology.md
+    source: my-source
+    source_path: ~/cami-workspace/sources/my-source/agents/frontend-methodology.md
     priority: 40
     deployed_at: 2026-02-25T09:00:00Z
     content_hash: sha256:abc123def456...
@@ -723,8 +723,8 @@ agents:
 
   - name: backend-methodology
     version: 2.0.0
-    source: fullstack-guild
-    source_path: ~/cami-workspace/sources/fullstack-guild/agents/backend-methodology.md
+    source: my-source
+    source_path: ~/cami-workspace/sources/my-source/agents/backend-methodology.md
     priority: 40
     deployed_at: 2026-02-25T09:05:00Z
     content_hash: sha256:def789abc012...
@@ -735,8 +735,8 @@ agents:
 skills:
   - name: react-tailwind
     version: 2.1.0
-    source: fullstack-guild
-    source_path: ~/cami-workspace/sources/fullstack-guild/skills/react-tailwind/SKILL.md
+    source: my-source
+    source_path: ~/cami-workspace/sources/my-source/skills/react-tailwind/SKILL.md
     priority: 40
     deployed_at: 2026-02-25T10:30:00Z
     content_hash: sha256:xyz789abc123...
@@ -810,7 +810,7 @@ User: "deploy agent-name"
 You: "I don't see agent-name in your sources.
 
 You have these sources configured:
-- fullstack-guild
+- my-source
 - my-agents
 
 Want to:
@@ -833,8 +833,8 @@ Or I can find your Claude Code projects - want me to scan for them?"
 User: "deploy frontend"
 
 You: "I found 3 matches for 'frontend':
-1. frontend-methodology v1.2.0 (fullstack-guild) - UI architecture
-2. frontend-testing v1.0.0 (fullstack-guild) - Frontend test patterns
+1. frontend-methodology v1.2.0 (my-source) - UI architecture
+2. frontend-testing v1.0.0 (my-source) - Frontend test patterns
 3. frontend-optimizer v1.5.0 (my-agents) - Performance optimization
 
 Which one?"

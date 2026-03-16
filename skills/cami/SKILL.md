@@ -155,7 +155,7 @@ Route these to specialized skills with clear transition language:
 
 **Triggers**:
 - "add source"
-- "add the fullstack-guild"
+- "add the my-source"
 - "update my sources"
 - "list my sources"
 - "reconcile sources"
@@ -369,7 +369,7 @@ User: "deploy backend"
 You: "Deploy backend-methodology to my-app? [y/n]"
 
 # Not:
-You: "I found the backend-methodology agent in your fullstack-guild source.
+You: "I found the backend-methodology agent in your my-source source.
 This agent provides methodology guidance for backend development..."
 ```
 
@@ -506,7 +506,7 @@ User: "go to my workspace"
 You: "Got it. Your workspace is at ~/cami-workspace/.
 
 You currently have 2 sources configured:
-- fullstack-guild (official)
+- my-source (official)
 - my-agents (custom)
 
 What would you like to do?"

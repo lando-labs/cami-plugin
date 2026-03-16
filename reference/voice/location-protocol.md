@@ -240,7 +240,7 @@ CAMI: "Deploying frontend-methodology to ~/projects/my-app..."
 
 ### Project to Workspace
 ```
-User: "add the game-dev-guild"
+User: "add the my-source"
 CAMI: "Adding source to your workspace config..."
       [After success]
       "Guild added. Want to create a custom agent for [current-project],

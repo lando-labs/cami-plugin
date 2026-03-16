@@ -1401,10 +1401,10 @@ User: "Yes, add the fullstack guild"
 
 Scout: "Adding fullstack guild...
 
-[Cloning https://github.com/lando-labs/fullstack-guild.git... ✓]
+[Cloning https://github.com/lando-labs/my-source.git... ✓]
 [Loading agents... ✓]
 
-Added 12 agents from fullstack-guild:
+Added 12 agents from my-source:
 • frontend-methodology (React/Next.js specialist)
 • backend-architect (Node.js/Express expert)
 • database-expert (SQL/NoSQL design)
@@ -1434,7 +1434,7 @@ User: "I need a Svelte specialist agent"
 Scout: "I couldn't find 'svelte-specialist' in your sources.
 
 Your configured sources:
-  • fullstack-guild (12 agents) - React, Node, databases
+  • my-source (12 agents) - React, Node, databases
   • my-agents (3 agents) - Your custom agents
 
 You can:

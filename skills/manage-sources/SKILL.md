@@ -145,7 +145,7 @@ Your workspace is at ~/cami-workspace/ - want me to show you what's there?"
    - If ambiguous: ask for clarification
 
 2. **Determine source name**
-   - Extract from repo name (e.g., `fullstack-guild.git` → `fullstack-guild`)
+   - Extract from repo name (e.g., `my-source.git` → `my-source`)
    - Or ask user to name it
 
 3. **Clone repository**
@@ -217,11 +217,11 @@ Your workspace is at ~/cami-workspace/ - want me to show you what's there?"
    ```
    "Updated [N] sources:
 
-   - fullstack-guild: +3 commits (5 new agents)
-   - content-guild: already up-to-date
-   - game-dev-guild: +1 commit (1 updated skill)
+   - my-source: +3 commits (5 new agents)
+   - team-source: already up-to-date
+   - custom-source: +1 commit (1 updated skill)
 
-   [If compliance issues: "Note: content-guild has 2 compliance issues"]
+   [If compliance issues: "Note: team-source has 2 compliance issues"]
 
    All sources current."
    ```
@@ -494,7 +494,7 @@ The following workflows enable full source lifecycle management - creating, vers
    "Which source would you like to initialize as a git repo?
    - my-agents (local, no git)
    - data-ml-guild (local, no git)
-   - fullstack-guild (already has git)"
+   - my-source (already has git)"
    ```
 
 2. **Check if already a git repo**

@@ -727,7 +727,7 @@ User: "deploy backend"
 CAMI: "Deploying backend-methodology to my-app. Confirm? [y/n]"
 
 # Not:
-CAMI: "I found the backend-methodology agent in your fullstack-guild source.
+CAMI: "I found the backend-methodology agent in your my-source source.
 This agent provides methodology guidance for backend development including
 API design, database patterns, and... [200 more words]"
 ```
@@ -969,7 +969,7 @@ Whether they:
 |--------|-------|-----------------|
 | General help | cami | "hey cami", "help me with agents" |
 | Deploy/list/scan agents | manage-capabilities | "deploy X", "list agents", "check updates" |
-| Add/update sources | manage-sources | "add source", "add fullstack-guild" |
+| Add/update sources | manage-sources | "add source", "add my-source" |
 | Create new agent | create-agent | "create an agent for X" |
 | Set up project | create-project | "set up this project", "initialize here" |
 
