@@ -1,10 +1,10 @@
 {
   "name": "cami",
   "description": "Claude Capability Management Interface - Scout, create, and deploy Claude Code agents and skills across your projects",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "author": {
     "name": "Lando Labs",
-    "email": "hello@lando-labs.com"
+    "email": "feedback@landolabs.co"
   },
   "homepage": "https://github.com/lando-labs/cami-plugin",
   "repository": "https://github.com/lando-labs/cami-plugin",
