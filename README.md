@@ -83,7 +83,7 @@ CAMI: "Perfect! Let me create a custom agent for you.
 
 You: "Yes"
 
-CAMI: "Creating your workspace at ~/cami-workspace/
+CAMI: "Creating your workspace at ~/.claude/cami-workspace/
       Creating state-management-specialist in sources/my-agents/... Done!
 
       Ready to deploy it to this project?"
@@ -94,7 +94,7 @@ CAMI: "Creating your workspace at ~/cami-workspace/
 ```
 You: "Yes. Scout this project."
 
-CAMI: "Done! Created your workspace at ~/cami-workspace/
+CAMI: "Done! Created your workspace at ~/.claude/cami-workspace/
 
       Looking at your React/TypeScript project... found package.json with React 19.
 
@@ -207,7 +207,7 @@ You make the call. CAMI executes.
 The first time you create an agent, add a source, or deploy an agent, CAMI creates:
 
 ```
-~/cami-workspace/
+~/.claude/cami-workspace/
 ├── config.yaml      # Auto-generated tracking
 └── sources/
     └── my-agents/               # Your custom agents (priority 10)
@@ -308,10 +308,10 @@ CAMI: "Checking all deployed agents...
 
 ### Workspace Structure
 
-CAMI stores everything in `~/cami-workspace/`:
+CAMI stores everything in `~/.claude/cami-workspace/`:
 
 ```
-~/cami-workspace/
+~/.claude/cami-workspace/
 ├── config.yaml              # Tracks sources and deployments
 ├── deployments.yaml         # Per-project deployment tracking
 └── sources/
@@ -340,12 +340,12 @@ updated_at: 2026-02-25T10:45:00Z
 
 sources:
   - name: my-agents
-    path: ~/cami-workspace/sources/my-agents
+    path: ~/.claude/cami-workspace/sources/my-agents
     priority: 10
     added_at: 2026-02-25T10:30:00Z
 
   - name: team-agents
-    path: ~/cami-workspace/sources/team-agents
+    path: ~/.claude/cami-workspace/sources/team-agents
     priority: 50
     added_at: 2026-02-25T10:35:00Z
     git:
@@ -394,7 +394,7 @@ claude plugin install lando-labs/cami
 Check if the workspace exists:
 
 ```bash
-ls -la ~/cami-workspace/
+ls -la ~/.claude/cami-workspace/
 ```
 
 If it doesn't exist, CAMI will create it on your first action. Try:

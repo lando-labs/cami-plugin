@@ -2,7 +2,7 @@
 
 **Version**: 1.0.0
 **Format**: YAML
-**Location**: `~/cami-workspace/config.yaml`
+**Location**: `$WORKSPACE/config.yaml`
 **Created**: Auto-generated on first meaningful action
 
 ---
@@ -120,7 +120,7 @@ Config file is created when the user:
 This is the **existing format** that CAMI MCP server users already have:
 
 ```yaml
-# ~/cami-workspace/config.yaml
+# $WORKSPACE/config.yaml
 version: "1"
 install_timestamp: 2025-11-20T17:37:36.626242873-06:00
 setup_complete: true
@@ -128,14 +128,14 @@ setup_complete: true
 agent_sources:
   - name: my-agents
     type: local
-    path: ~/cami-workspace/sources/my-agents
+    path: $WORKSPACE/sources/my-agents
     priority: 10
     git:
       enabled: false
 
   - name: my-source
     type: local
-    path: ~/cami-workspace/sources/my-source
+    path: $WORKSPACE/sources/my-source
     priority: 40
     git:
       enabled: true
@@ -203,15 +203,15 @@ When the **same agent name** exists in multiple sources, the source with the **l
 agent_sources:
   - name: my-agents
     priority: 10
-    path: ~/cami-workspace/sources/my-agents
+    path: $WORKSPACE/sources/my-agents
 
   - name: team-guild
     priority: 40
-    path: ~/cami-workspace/sources/team-guild
+    path: $WORKSPACE/sources/team-guild
 
   - name: my-source
     priority: 100
-    path: ~/cami-workspace/sources/my-source
+    path: $WORKSPACE/sources/my-source
 ```
 
 **Agent Resolution**:
@@ -315,7 +315,7 @@ $WORKSPACE/                          # User-configured location (see Workspace R
 
 ### 5. Absolute Paths in Config
 
-**Decision**: Store absolute paths in config (e.g., `~/cami-workspace/sources/...`)
+**Decision**: Store absolute paths in config (e.g., `$WORKSPACE/sources/...`)
 
 **Rationale**:
 - **Unambiguous**: No resolution needed
@@ -362,7 +362,7 @@ When loading `config.json`, validate:
 **Invalid JSON**:
 ```
 Error: Config file is not valid JSON
-Location: ~/cami-workspace/config.json:12
+Location: $WORKSPACE/config.json:12
 Details: Unexpected token '}' in JSON at position 245
 ```
 
@@ -387,7 +387,7 @@ Available sources: fullstack-source, custom
 
 CAMI uses a two-tier deployment tracking system:
 
-1. **Centralized**: `~/cami-workspace/deployments.yaml` - Source of truth for ALL deployments
+1. **Centralized**: `$WORKSPACE/deployments.yaml` - Source of truth for ALL deployments
 2. **Per-Project**: `<project>/.claude/cami-manifest.yaml` - Cache of that project's deployment data
 
 Both files use the **same schema** for consistency.
@@ -401,7 +401,7 @@ Both files use the **same schema** for consistency.
 This is the master record of all deployments across all projects.
 
 ```yaml
-# ~/cami-workspace/deployments.yaml
+# $WORKSPACE/deployments.yaml
 version: "2"
 last_updated: 2026-02-05T14:07:59.387077-06:00
 manifest_format_version: 2
@@ -415,7 +415,7 @@ deployments:
       - name: frontend-methodology
         version: 1.2.0
         source: my-source
-        source_path: ~/cami-workspace/sources/my-source/agents/frontend-methodology.md
+        source_path: $WORKSPACE/sources/my-source/agents/frontend-methodology.md
         priority: 40
         deployed_at: 2026-01-28T22:17:31.633506-06:00
         content_hash: sha256:abc123def456...
@@ -448,7 +448,7 @@ agents:
   - name: frontend-methodology
     version: 1.2.0
     source: my-source
-    source_path: ~/cami-workspace/sources/my-source/agents/frontend-methodology.md
+    source_path: $WORKSPACE/sources/my-source/agents/frontend-methodology.md
     priority: 40
     deployed_at: 2026-01-28T22:17:31.633506-06:00
     content_hash: sha256:abc123def456...
@@ -459,7 +459,7 @@ agents:
   - name: backend-methodology
     version: 2.0.0
     source: my-source
-    source_path: ~/cami-workspace/sources/my-source/agents/backend-methodology.md
+    source_path: $WORKSPACE/sources/my-source/agents/backend-methodology.md
     priority: 40
     deployed_at: 2026-01-28T22:20:00.000000-06:00
     content_hash: sha256:ghi789jkl012...
@@ -471,7 +471,7 @@ skills:
   - name: react-tailwind
     version: 2.1.0
     source: my-source
-    source_path: ~/cami-workspace/sources/my-source/skills/react-tailwind/SKILL.md
+    source_path: $WORKSPACE/sources/my-source/skills/react-tailwind/SKILL.md
     priority: 40
     deployed_at: 2026-01-28T22:25:00.000000-06:00
     content_hash: sha256:mno456pqr789...
@@ -605,7 +605,7 @@ agents:
   - name: frontend-methodology
     version: 1.2.0
     source: my-source
-    source_path: ~/cami-workspace/sources/my-source/agents/frontend-methodology.md
+    source_path: $WORKSPACE/sources/my-source/agents/frontend-methodology.md
     priority: 40
     deployed_at: 2026-02-25T10:30:00Z
     content_hash: sha256:abc123...
@@ -742,7 +742,7 @@ version: 1  # Current version
 ### Minimal Workspace Config (Fresh Install)
 
 ```yaml
-# ~/cami-workspace/config.yaml
+# $WORKSPACE/config.yaml
 version: "1"
 setup_complete: true
 agent_sources: []
@@ -752,7 +752,7 @@ deploy_locations: []
 ### Single Source Config
 
 ```yaml
-# ~/cami-workspace/config.yaml
+# $WORKSPACE/config.yaml
 version: "1"
 install_timestamp: 2026-02-25T10:30:00Z
 setup_complete: true
@@ -760,7 +760,7 @@ setup_complete: true
 agent_sources:
   - name: my-source
     type: local
-    path: ~/cami-workspace/sources/my-source
+    path: $WORKSPACE/sources/my-source
     priority: 100
     git:
       enabled: true
@@ -774,7 +774,7 @@ deploy_locations:
 ### Multi-Source + Custom Agents Config
 
 ```yaml
-# ~/cami-workspace/config.yaml
+# $WORKSPACE/config.yaml
 version: "1"
 install_timestamp: 2026-02-25T10:30:00Z
 setup_complete: true
@@ -782,14 +782,14 @@ setup_complete: true
 agent_sources:
   - name: my-agents
     type: local
-    path: ~/cami-workspace/sources/my-agents
+    path: $WORKSPACE/sources/my-agents
     priority: 10
     git:
       enabled: false
 
   - name: my-source
     type: local
-    path: ~/cami-workspace/sources/my-source
+    path: $WORKSPACE/sources/my-source
     priority: 100
     git:
       enabled: true
@@ -797,7 +797,7 @@ agent_sources:
 
   - name: team-source
     type: local
-    path: ~/cami-workspace/sources/team-source
+    path: $WORKSPACE/sources/team-source
     priority: 100
     git:
       enabled: true
@@ -824,7 +824,7 @@ agents:
   - name: frontend-methodology
     version: 1.2.0
     source: my-source
-    source_path: ~/cami-workspace/sources/my-source/agents/frontend-methodology.md
+    source_path: $WORKSPACE/sources/my-source/agents/frontend-methodology.md
     priority: 40
     deployed_at: 2026-02-25T10:30:00Z
     content_hash: sha256:abc123def456789...
@@ -835,7 +835,7 @@ agents:
   - name: backend-methodology
     version: 2.0.0
     source: my-source
-    source_path: ~/cami-workspace/sources/my-source/agents/backend-methodology.md
+    source_path: $WORKSPACE/sources/my-source/agents/backend-methodology.md
     priority: 40
     deployed_at: 2026-02-25T10:32:00Z
     content_hash: sha256:def789ghi012345...
@@ -847,7 +847,7 @@ skills:
   - name: react-tailwind
     version: 2.1.0
     source: my-source
-    source_path: ~/cami-workspace/sources/my-source/skills/react-tailwind/SKILL.md
+    source_path: $WORKSPACE/sources/my-source/skills/react-tailwind/SKILL.md
     priority: 40
     deployed_at: 2026-02-25T10:35:00Z
     content_hash: sha256:xyz789abc123456...

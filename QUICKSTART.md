@@ -91,13 +91,13 @@ You: "Hey CAMI"
 You: "Yes, set up my workspace"
 ```
 
-**Expected**: Creates `~/cami-workspace/` with:
+**Expected**: Creates `~/.claude/cami-workspace/` with:
 - `config.json`
 - `sources/` directory
 
 **Verify**:
 ```bash
-ls -la ~/cami-workspace/
+ls -la ~/.claude/cami-workspace/
 ```
 
 ---
@@ -110,12 +110,12 @@ You: "Create an agent for testing React components"
 
 **Expected**:
 1. CAMI asks clarifying questions about focus areas
-2. Creates agent in `~/cami-workspace/sources/custom/`
+2. Creates agent in `~/.claude/cami-workspace/sources/custom/`
 3. Offers to deploy
 
 **Verify**:
 ```bash
-ls ~/cami-workspace/sources/custom/
+ls ~/.claude/cami-workspace/sources/custom/
 # Should show: testing-react-components.md (or similar)
 ```
 
@@ -159,7 +159,7 @@ You: "Add https://github.com/example/web-agents as a source"
 
 **Verify**:
 ```bash
-ls ~/cami-workspace/sources/
+ls ~/.claude/cami-workspace/sources/
 # Should show: my-agents/, web-agents/
 ```
 
@@ -237,7 +237,7 @@ To start fresh:
 
 ```bash
 # Remove workspace
-rm -rf ~/cami-workspace
+rm -rf ~/.claude/cami-workspace
 
 # Remove deployed agents from test project
 rm -rf ~/test-project/.claude/agents/*
@@ -292,7 +292,7 @@ You: "Scout this project"
 All tests pass when:
 
 - [ ] CAMI responds with scout persona
-- [ ] Workspace created at `~/cami-workspace/`
+- [ ] Workspace created at `~/.claude/cami-workspace/`
 - [ ] Custom agent created in `sources/custom/`
 - [ ] Agent deployed to project `.claude/agents/`
 - [ ] Source can be added from Git URL
