@@ -1,6 +1,8 @@
 # CAMI Plugin - Quickstart Guide
 
-Testing installation and full workflow on a fresh machine.
+CAMI helps you create and manage AI specialists (called **agents**) that assist with specific tasks in your coding projects. Instead of manually setting up Claude for each project, CAMI scouts your codebase, recommends relevant specialists, and deploys them with a single command.
+
+**This guide walks through installation and verification** on a fresh machine.
 
 ---
 
