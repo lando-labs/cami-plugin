@@ -203,7 +203,7 @@ export CAMI_WORKSPACE_DIR=~/my-agents     # Custom location
 **Phase 1: Document Current Behavior**
 ```yaml
 # config.yaml includes workspace metadata
-workspace_path: /Users/lando/cami-workspace  # Absolute path
+workspace_path: ~/cami-workspace  # Absolute path (~ expands to user's home)
 ```
 
 **Phase 2: Add Environment Variable Support**

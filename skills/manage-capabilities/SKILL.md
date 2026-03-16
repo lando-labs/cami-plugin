@@ -109,7 +109,7 @@ agents:
   - name: frontend-methodology
     version: 1.1.0
     source: fullstack-guild
-    source_path: /Users/lando/cami-workspace/sources/fullstack-guild/agents/frontend-methodology.md
+    source_path: ~/cami-workspace/sources/fullstack-guild/agents/frontend-methodology.md
     priority: 40
     deployed_at: 2026-02-25T10:30:00Z
     content_hash: sha256:abc123def...
@@ -121,7 +121,7 @@ skills:
   - name: react-tailwind
     version: 2.0.0
     source: fullstack-guild
-    source_path: /Users/lando/cami-workspace/sources/fullstack-guild/skills/react-tailwind/SKILL.md
+    source_path: ~/cami-workspace/sources/fullstack-guild/skills/react-tailwind/SKILL.md
     priority: 40
     deployed_at: 2026-02-25T10:32:00Z
     content_hash: sha256:xyz789abc...
@@ -713,7 +713,7 @@ agents:
   - name: frontend-methodology
     version: 1.2.0
     source: fullstack-guild
-    source_path: /Users/lando/cami-workspace/sources/fullstack-guild/agents/frontend-methodology.md
+    source_path: ~/cami-workspace/sources/fullstack-guild/agents/frontend-methodology.md
     priority: 40
     deployed_at: 2026-02-25T09:00:00Z
     content_hash: sha256:abc123def456...
@@ -724,7 +724,7 @@ agents:
   - name: backend-methodology
     version: 2.0.0
     source: fullstack-guild
-    source_path: /Users/lando/cami-workspace/sources/fullstack-guild/agents/backend-methodology.md
+    source_path: ~/cami-workspace/sources/fullstack-guild/agents/backend-methodology.md
     priority: 40
     deployed_at: 2026-02-25T09:05:00Z
     content_hash: sha256:def789abc012...
@@ -736,7 +736,7 @@ skills:
   - name: react-tailwind
     version: 2.1.0
     source: fullstack-guild
-    source_path: /Users/lando/cami-workspace/sources/fullstack-guild/skills/react-tailwind/SKILL.md
+    source_path: ~/cami-workspace/sources/fullstack-guild/skills/react-tailwind/SKILL.md
     priority: 40
     deployed_at: 2026-02-25T10:30:00Z
     content_hash: sha256:xyz789abc123...

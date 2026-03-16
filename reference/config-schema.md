@@ -112,14 +112,14 @@ setup_complete: true
 agent_sources:
   - name: my-agents
     type: local
-    path: /Users/lando/cami-workspace/sources/my-agents
+    path: ~/cami-workspace/sources/my-agents
     priority: 10
     git:
       enabled: false
 
   - name: fullstack-guild
     type: local
-    path: /Users/lando/cami-workspace/sources/fullstack-guild
+    path: ~/cami-workspace/sources/fullstack-guild
     priority: 40
     git:
       enabled: true
@@ -127,7 +127,7 @@ agent_sources:
 
 deploy_locations:
   - name: my-app
-    path: /Users/lando/projects/my-app
+    path: ~/projects/my-app
 ```
 
 ### Field Definitions
@@ -332,7 +332,7 @@ SOURCES="$WORKSPACE/sources/"
 
 ### 5. Absolute Paths in Config
 
-**Decision**: Store absolute paths in config (e.g., `/Users/lando/cami-workspace/sources/...`)
+**Decision**: Store absolute paths in config (e.g., `~/cami-workspace/sources/...`)
 
 **Rationale**:
 - **Unambiguous**: No resolution needed
@@ -424,7 +424,7 @@ last_updated: 2026-02-05T14:07:59.387077-06:00
 manifest_format_version: 2
 
 deployments:
-  /Users/lando/projects/my-app:
+  ~/projects/my-app:
     state: cami-native
     normalized_at: 2026-01-28T22:17:31.633506-06:00
     last_scanned: 2026-01-29T22:44:47.131615-06:00
@@ -432,7 +432,7 @@ deployments:
       - name: frontend-methodology
         version: 1.2.0
         source: fullstack-guild
-        source_path: /Users/lando/cami-workspace/sources/fullstack-guild/agents/frontend-methodology.md
+        source_path: ~/cami-workspace/sources/fullstack-guild/agents/frontend-methodology.md
         priority: 40
         deployed_at: 2026-01-28T22:17:31.633506-06:00
         content_hash: sha256:abc123def456...
@@ -440,7 +440,7 @@ deployments:
         custom_override: false
         origin: cami
 
-  /Users/lando/projects/other-app:
+  ~/projects/other-app:
     state: cami-native
     # ... same structure
 ```
@@ -465,7 +465,7 @@ agents:
   - name: frontend-methodology
     version: 1.2.0
     source: fullstack-guild
-    source_path: /Users/lando/cami-workspace/sources/fullstack-guild/agents/frontend-methodology.md
+    source_path: ~/cami-workspace/sources/fullstack-guild/agents/frontend-methodology.md
     priority: 40
     deployed_at: 2026-01-28T22:17:31.633506-06:00
     content_hash: sha256:abc123def456...
@@ -476,7 +476,7 @@ agents:
   - name: backend-methodology
     version: 2.0.0
     source: fullstack-guild
-    source_path: /Users/lando/cami-workspace/sources/fullstack-guild/agents/backend-methodology.md
+    source_path: ~/cami-workspace/sources/fullstack-guild/agents/backend-methodology.md
     priority: 40
     deployed_at: 2026-01-28T22:20:00.000000-06:00
     content_hash: sha256:ghi789jkl012...
@@ -488,7 +488,7 @@ skills:
   - name: react-tailwind
     version: 2.1.0
     source: fullstack-guild
-    source_path: /Users/lando/cami-workspace/sources/fullstack-guild/skills/react-tailwind/SKILL.md
+    source_path: ~/cami-workspace/sources/fullstack-guild/skills/react-tailwind/SKILL.md
     priority: 40
     deployed_at: 2026-01-28T22:25:00.000000-06:00
     content_hash: sha256:mno456pqr789...
@@ -622,7 +622,7 @@ agents:
   - name: frontend-methodology
     version: 1.2.0
     source: fullstack-guild
-    source_path: /Users/lando/cami-workspace/sources/fullstack-guild/agents/frontend-methodology.md
+    source_path: ~/cami-workspace/sources/fullstack-guild/agents/frontend-methodology.md
     priority: 40
     deployed_at: 2026-02-25T10:30:00Z
     content_hash: sha256:abc123...
@@ -776,7 +776,7 @@ setup_complete: true
 agent_sources:
   - name: fullstack-guild
     type: local
-    path: /Users/lando/cami-workspace/sources/fullstack-guild
+    path: ~/cami-workspace/sources/fullstack-guild
     priority: 100
     git:
       enabled: true
@@ -784,7 +784,7 @@ agent_sources:
 
 deploy_locations:
   - name: my-web-app
-    path: /Users/lando/projects/my-web-app
+    path: ~/projects/my-web-app
 ```
 
 ### Multi-Source + Custom Agents Config
@@ -798,14 +798,14 @@ setup_complete: true
 agent_sources:
   - name: my-agents
     type: local
-    path: /Users/lando/cami-workspace/sources/my-agents
+    path: ~/cami-workspace/sources/my-agents
     priority: 10
     git:
       enabled: false
 
   - name: fullstack-guild
     type: local
-    path: /Users/lando/cami-workspace/sources/fullstack-guild
+    path: ~/cami-workspace/sources/fullstack-guild
     priority: 100
     git:
       enabled: true
@@ -813,7 +813,7 @@ agent_sources:
 
   - name: game-dev-guild
     type: local
-    path: /Users/lando/cami-workspace/sources/game-dev-guild
+    path: ~/cami-workspace/sources/game-dev-guild
     priority: 100
     git:
       enabled: true
@@ -821,15 +821,15 @@ agent_sources:
 
 deploy_locations:
   - name: web-app
-    path: /Users/lando/projects/web-app
+    path: ~/projects/web-app
   - name: phaser-game
-    path: /Users/lando/projects/phaser-game
+    path: ~/projects/phaser-game
 ```
 
 ### Example Project Manifest (v2 Format)
 
 ```yaml
-# /Users/lando/projects/my-app/.claude/cami-manifest.yaml
+# ~/projects/my-app/.claude/cami-manifest.yaml
 version: "2"
 manifest_format_version: 2
 state: cami-native
@@ -840,7 +840,7 @@ agents:
   - name: frontend-methodology
     version: 1.2.0
     source: fullstack-guild
-    source_path: /Users/lando/cami-workspace/sources/fullstack-guild/agents/frontend-methodology.md
+    source_path: ~/cami-workspace/sources/fullstack-guild/agents/frontend-methodology.md
     priority: 40
     deployed_at: 2026-02-25T10:30:00Z
     content_hash: sha256:abc123def456789...
@@ -851,7 +851,7 @@ agents:
   - name: backend-methodology
     version: 2.0.0
     source: fullstack-guild
-    source_path: /Users/lando/cami-workspace/sources/fullstack-guild/agents/backend-methodology.md
+    source_path: ~/cami-workspace/sources/fullstack-guild/agents/backend-methodology.md
     priority: 40
     deployed_at: 2026-02-25T10:32:00Z
     content_hash: sha256:def789ghi012345...
@@ -863,7 +863,7 @@ skills:
   - name: react-tailwind
     version: 2.1.0
     source: fullstack-guild
-    source_path: /Users/lando/cami-workspace/sources/fullstack-guild/skills/react-tailwind/SKILL.md
+    source_path: ~/cami-workspace/sources/fullstack-guild/skills/react-tailwind/SKILL.md
     priority: 40
     deployed_at: 2026-02-25T10:35:00Z
     content_hash: sha256:xyz789abc123456...
