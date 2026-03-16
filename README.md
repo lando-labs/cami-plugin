@@ -313,16 +313,6 @@ CAMI stores everything in `~/cami-workspace/`:
             └── *.md
 ```
 
-### Custom Workspace Location
-
-Override the default location:
-
-```bash
-export CAMI_WORKSPACE_PATH=~/my-custom-workspace
-```
-
-CAMI will use this path instead of `~/cami-workspace/`.
-
 ### config.yaml Schema
 
 Auto-generated, but you can edit manually if needed:
@@ -409,21 +399,6 @@ CAMI: "You have 2 sources configured:
 ```
 
 If the source you need isn't listed, add it.
-
-### "Custom workspace path not working"
-
-Make sure the environment variable is set in your shell config:
-
-```bash
-# Add to ~/.bashrc or ~/.zshrc
-export CAMI_WORKSPACE_PATH=~/my-custom-workspace
-```
-
-Restart your shell or source the config:
-
-```bash
-source ~/.zshrc
-```
 
 ---
 

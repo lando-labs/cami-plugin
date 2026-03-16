@@ -86,7 +86,7 @@ Both agents and skills are "capabilities":
 ## Dependencies
 
 - Claude Code plugin system
-- User's CAMI workspace (`~/cami-workspace/` or `$CAMI_WORKSPACE_PATH`)
+- User's CAMI workspace (`$WORKSPACE` - resolved from `~/.claude/cami.yaml` or default `~/.claude/cami-workspace`)
 
 ## Update Log
 

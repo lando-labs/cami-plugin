@@ -2,7 +2,7 @@
 
 **Version**: 1.0.0
 **Format**: YAML
-**Location**: `$CAMI_WORKSPACE_PATH/config.yaml` (default: `~/cami-workspace/config.yaml`)
+**Location**: `~/cami-workspace/config.yaml`
 **Created**: Auto-generated on first meaningful action
 
 ---
@@ -20,24 +20,40 @@
 
 ---
 
-## Workspace Path Resolution
+## Workspace Resolution
 
-**ALWAYS resolve the workspace path before any operation.**
+CAMI stores configuration and sources in a user-configurable workspace.
 
-```bash
-# Check for custom workspace path
-WORKSPACE_PATH="${CAMI_WORKSPACE_PATH:-$HOME/cami-workspace}"
+### Bootstrap File
 
-# Use this for all paths:
-# - Config: $WORKSPACE_PATH/config.yaml
-# - Sources: $WORKSPACE_PATH/sources/
-# - Deployments: $WORKSPACE_PATH/deployments.yaml
+The workspace location is stored in `~/.claude/cami.yaml`:
+
+```yaml
+# ~/.claude/cami.yaml
+workspace_path: ~/.claude/cami-workspace
 ```
 
-**In skill instructions**, check the environment variable:
-1. Run: `echo $CAMI_WORKSPACE_PATH`
-2. If set and non-empty: use that path
-3. If empty/unset: use default `~/cami-workspace`
+### Resolution Logic
+
+**To resolve `$WORKSPACE`:**
+1. Check `~/.claude/cami.yaml` for `workspace_path` setting
+2. If not found, default to `~/.claude/cami-workspace`
+
+```bash
+# Read workspace path
+WORKSPACE=$(cat ~/.claude/cami.yaml 2>/dev/null | grep workspace_path | cut -d: -f2 | tr -d ' ' || echo "$HOME/.claude/cami-workspace")
+```
+
+### Workspace Locations (Set During Onboarding)
+
+Users choose their workspace location during first-run onboarding:
+
+| Option | Path | Best For |
+|--------|------|----------|
+| 1 (default) | `~/.claude/cami-workspace` | Most users - keeps things tidy |
+| 2 | `~/cami-workspace` | Easy access in home directory |
+| 3 | `~/projects/cami-workspace` | Users who organize by projects |
+| 4 | Custom | Specific requirements |
 
 ---
 
@@ -220,7 +236,7 @@ Claude: *Adds source with priority 20 instead of default 100*
 CAMI auto-creates this structure when needed:
 
 ```
-~/cami-workspace/                    # Or $CAMI_WORKSPACE_PATH if set
+$WORKSPACE/                          # User-configured location (see Workspace Resolution)
 ├── config.yaml                      # Workspace configuration
 ├── deployments.yaml                 # Detailed deployment tracking (optional)
 └── sources/                         # Agent source directories
@@ -228,7 +244,7 @@ CAMI auto-creates this structure when needed:
     │   ├── CLAUDE.md                # Source description
     │   ├── my-agent.md              # User-created agents
     │   └── ...
-    ├── my-source/             # Git cloned source
+    ├── my-source/                   # Git cloned source
     │   ├── .git/
     │   ├── CLAUDE.md
     │   ├── agents/
@@ -236,7 +252,7 @@ CAMI auto-creates this structure when needed:
     │   │   └── backend-methodology.md
     │   └── skills/
     │       └── react-tailwind/
-    └── team-source/              # Another git source
+    └── team-source/                 # Another git source
         └── ...
 ```
 
@@ -249,39 +265,6 @@ CAMI auto-creates this structure when needed:
 **No Manual Setup Required**: Users never create directories manually.
 
 ---
-
-## Environment Variables
-
-### CAMI_WORKSPACE_PATH
-
-**Purpose**: Override default workspace location
-
-**Default**: `~/cami-workspace`
-
-**Usage**:
-```bash
-# Use a different workspace location
-export CAMI_WORKSPACE_PATH=~/my-custom-workspace
-
-# CAMI will use this location instead of ~/cami-workspace/
-```
-
-**Use Cases**:
-- Multi-workspace setups (work vs personal)
-- Shared team workspaces (network drives)
-- Testing/development (temporary workspaces)
-
-**Resolution Logic** (for skill implementations):
-```bash
-# Always check env var first
-WORKSPACE="${CAMI_WORKSPACE_PATH:-$HOME/cami-workspace}"
-
-# Then use for all paths
-CONFIG="$WORKSPACE/config.yaml"
-SOURCES="$WORKSPACE/sources/"
-```
-
-**IMPORTANT**: Every skill that references workspace paths MUST check for this environment variable. See "Workspace Path Resolution" section at the top of this document.
 
 ---
 
@@ -659,7 +642,7 @@ version: 1  # Current version
 - [x] Use YAML format (not JSON)
 - [x] Use `agent_sources` field name (not `sources`)
 - [x] Use `deploy_locations` field name (not `deployments`)
-- [x] Check `CAMI_WORKSPACE_PATH` env var before using default
+- [x] Check `~/.claude/cami.yaml` bootstrap file before using default
 - [ ] Auto-create workspace directory on first operation
 - [ ] Auto-create config.yaml with correct schema
 - [ ] Set priority based on source type (custom=10, team=40, official=100)
@@ -676,11 +659,12 @@ version: 1  # Current version
 - [ ] Auto-migrate old manifest formats on read
 - [ ] Compute content_hash on deployment
 
-### Environment Variables
+### Bootstrap Configuration
 
-- [x] Document `CAMI_WORKSPACE_PATH` support
-- [ ] All skills check env var before using default path
-- [ ] Workspace creation respects env var
+- [x] Document `~/.claude/cami.yaml` bootstrap file
+- [x] Skills use `$WORKSPACE` variable (resolved at runtime)
+- [x] Default workspace: `~/.claude/cami-workspace`
+- [x] First-run onboarding sets workspace path
 
 ---
 
@@ -688,17 +672,17 @@ version: 1  # Current version
 
 ### Workspace Path Resolution Tests
 
-1. **Default Path**:
-   - `CAMI_WORKSPACE_PATH` not set
-   - Uses `~/cami-workspace`
+1. **Default Path (No Bootstrap File)**:
+   - `~/.claude/cami.yaml` does not exist
+   - Uses default `~/.claude/cami-workspace`
 
-2. **Custom Path**:
-   - `CAMI_WORKSPACE_PATH=~/my-workspace`
+2. **Custom Path (Bootstrap Configured)**:
+   - `~/.claude/cami.yaml` contains `workspace_path: ~/my-workspace`
    - Uses `~/my-workspace/config.yaml`
 
-3. **Empty Env Var**:
-   - `CAMI_WORKSPACE_PATH=""` (empty string)
-   - Falls back to `~/cami-workspace`
+3. **Missing workspace_path Key**:
+   - `~/.claude/cami.yaml` exists but no `workspace_path` key
+   - Falls back to `~/.claude/cami-workspace`
 
 ### Priority Resolution Tests
 
